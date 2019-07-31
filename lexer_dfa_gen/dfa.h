@@ -3,32 +3,36 @@
 #include <set>
 
 /*
+Identifies a token type represented by a DFA.
+Also serves when merging two DFAs:
 When two DFAs are being merged, and if it happens that for a certain
-symbol they would both go to a final state, then exactly one of the DFAs'
-final state will be consider final in the merged DFA.
-This enum is to define, which one of the two DFAs will be the winner for providing
+symbol they would both go to a final state, then exactly one of those DFAs'
+final states will be consider as final in the merged DFA.
+An integer value of this enum will determine, which one of the two DFAs will be the winner for providing
 the 'finality' of a state in the case described. This priority needs to be defined for every final state of a DFA.
-The reason is two prevent ambiguity for determining which token "type" the token should be:
-for example when the lexer reads a token "if", is it a keyword, or a variable name?
+As an example, consider that the lexer reads a token "if". Now, is it a keyword, or a variable name?
 Note: The lower the enum value is in this source code, the higher is the priority.
 */
-enum DfaUnionResolvePriority
+enum TokenType
 {
-    Other,
-    Keyword
+    VariableName,
+    Number,
+    If,
+    Assign
 };
 
 class Dfa
 {
 private:
     std::vector<std::vector<int>> transitions;
-    std::map<int, DfaUnionResolvePriority> finalStates;
+    std::map<int, TokenType> finalStates;
     bool isToStringValComputed;
     std::string toStringVal;
-    DfaUnionResolvePriority dfaUnionResolvePriority;
+    int currentState;
 
 public:
-    Dfa(int statesCnt, const std::map<int, DfaUnionResolvePriority> &finalStates);
+    Dfa(){};
+    Dfa(int statesCnt, const std::map<int, TokenType> &finalStates);
 
     void AddTransition(int srcState, int targetState, unsigned char c);
 
@@ -42,6 +46,14 @@ public:
 
     Dfa Union(Dfa &other);
 
+    void Move(char c);
+
+    bool IsInFinalState();
+
+    bool IsInErrorState();
+
+    TokenType CurrentFinalStateTokenType();
+
     static Dfa CreateDfaFromPairTypeStates(const std::map<std::pair<int, int>, std::map<char, std::pair<int, int>>>& unionTransitions,
-                                           const std::map<std::pair<int, int>, DfaUnionResolvePriority>& unionDfaFinalStates);
+                                           const std::map<std::pair<int, int>, TokenType>& unionDfaFinalStates);
 };

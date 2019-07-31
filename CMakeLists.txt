@@ -4,3 +4,6 @@ project (olang)
 add_subdirectory (lexer_dfa_gen)
 add_executable(olang main.cpp)
 target_link_libraries (olang LexerGen)
+
+enable_testing()
+add_subdirectory(tests)

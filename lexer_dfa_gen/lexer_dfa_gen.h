@@ -1,26 +1,9 @@
 #include <vector>
 #include "dfa.h"
 
-struct Token
+struct LexerGen
 {
-};
-
-enum KeywordEnum
-{
-    IF,
-    ELSE,
-    WHILE
-};
-
-struct Keyword : Token
-{
-    KeywordEnum kwEnum;
-};
-
-class LexerGen
-{
-private:
-    std::vector<Dfa> tokenDfas;
-public:
+    Dfa unionDfa;
     LexerGen();
+    static Dfa CreateEmptyDfaForTokenType(int statesCnt, std::vector<int> finalStates, TokenType tokenType);
 };

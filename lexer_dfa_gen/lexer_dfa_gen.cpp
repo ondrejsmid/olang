@@ -1,31 +1,53 @@
 #include <iostream>
+#include <list>
 #include "lexer_dfa_gen.h"
 
 using namespace std;
 
 LexerGen::LexerGen()
 {
-    map<int, DfaUnionResolvePriority> finalStates1;
-    finalStates1[2] = DfaUnionResolvePriority::Keyword;
-    Dfa ifKwDfa(3, finalStates1);
-    ifKwDfa.AddTransition(0, 1, 'i');
-    ifKwDfa.AddTransition(1, 2, 'f');
-    cout << ifKwDfa;
+    list<Dfa*> allTokenDfas;
     
-    cout << "----------------------------" << endl;
+    Dfa variableNameDfa = CreateEmptyDfaForTokenType(2, vector<int>{1}, TokenType::VariableName);
+    variableNameDfa.AddTransition(0, 1, 'A', 'Z');
+    variableNameDfa.AddTransition(0, 1, 'a', 'z');
+    variableNameDfa.AddTransition(1, 1, 'A', 'Z');
+    variableNameDfa.AddTransition(1, 1, 'a', 'z');
+    variableNameDfa.AddTransition(1, 1, '0', '9');
+    allTokenDfas.push_back(&variableNameDfa);
 
-    map<int, DfaUnionResolvePriority> finalStates2;
-    finalStates2[1] = DfaUnionResolvePriority::Other;
-    finalStates2[2] = DfaUnionResolvePriority::Other;
-    Dfa dfa2(3, finalStates2);
-    dfa2.AddTransition(0, 1, 'a');
-    dfa2.AddTransition(0, 1, '1', '9');
-    dfa2.AddTransition(0, 2, 'b');
-    dfa2.AddTransition(0, 2, 'k', 'l');
-    cout << dfa2;
+    Dfa numberDfa = CreateEmptyDfaForTokenType(4, vector<int>{1, 2}, TokenType::Number);
+    numberDfa.AddTransition(0, 1, '0');
+    numberDfa.AddTransition(0, 2, '1', '9');
+    numberDfa.AddTransition(2, 2, '1', '9');
+    numberDfa.AddTransition(0, 3, '-');
+    numberDfa.AddTransition(3, 2, '1', '9');
+    allTokenDfas.push_back(&numberDfa);
 
-    cout << "----------------------------" << endl;
+    Dfa ifDfa = CreateEmptyDfaForTokenType(3, vector<int>{2}, TokenType::If);
+    ifDfa.AddTransition(0, 1, 'i');
+    ifDfa.AddTransition(1, 2, 'f');
+    allTokenDfas.push_back(&ifDfa);
+    
+    list<Dfa*>::const_iterator tokenDfa = allTokenDfas.begin();
+    Dfa unionDfa = **tokenDfa;
+    ++tokenDfa;
 
-    Dfa unionDfa = ifKwDfa.Union(dfa2);
-    cout << unionDfa;
+    while (tokenDfa != allTokenDfas.end())
+    {
+        unionDfa = unionDfa.Union(**tokenDfa);
+        ++tokenDfa;
+    }
+    this->unionDfa = unionDfa;
+}
+
+Dfa LexerGen::CreateEmptyDfaForTokenType(int statesCnt, std::vector<int> finalStates, TokenType tokenType)
+{
+    map<int, TokenType> finalStatesWithTokType;
+    for (int i = 0; i < finalStates.size(); i++)
+    {
+        finalStatesWithTokType[finalStates[i]] = tokenType;
+    }
+    Dfa emptyDfa(statesCnt, finalStatesWithTokType);
+    return emptyDfa;
 }

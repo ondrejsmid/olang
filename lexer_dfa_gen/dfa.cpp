@@ -3,11 +3,12 @@
 
 using namespace std;
 
-Dfa::Dfa(int statesCnt, const map<int, DfaUnionResolvePriority> &finalStates)
+Dfa::Dfa(int statesCnt, const map<int, TokenType> &finalStates)
     :
     finalStates(finalStates),
-    dfaUnionResolvePriority(dfaUnionResolvePriority),
-    isToStringValComputed(false), toStringVal("")
+    isToStringValComputed(false),
+    toStringVal(""),
+    currentState(0)
 {
     for (int i = 0; i < statesCnt; i++)
     {
@@ -103,7 +104,7 @@ ostream & operator << (ostream &out, const Dfa &dfa)
 Dfa Dfa::Union(Dfa &other)
 {
     map<pair<int, int>, map<char, pair<int, int>>> unionTransitions;
-    map<pair<int, int>, DfaUnionResolvePriority> unionDfaFinalStates;
+    map<pair<int, int>, TokenType> unionDfaFinalStates;
     
     set<pair<int, int>> unionStatesToResolve;
     unionStatesToResolve.insert(pair<int, int>(0, 0));
@@ -141,8 +142,8 @@ Dfa Dfa::Union(Dfa &other)
         
         if (isFinalInThisDfa && isFinalInOtherDfa)
         {
-            DfaUnionResolvePriority resolvePriorityInThisDfa = finalStates[statesIt->first];
-            DfaUnionResolvePriority resolvePriorityInOtherDfa = other.finalStates[statesIt->second];
+            TokenType resolvePriorityInThisDfa = finalStates[statesIt->first];
+            TokenType resolvePriorityInOtherDfa = other.finalStates[statesIt->second];
             if (resolvePriorityInThisDfa > resolvePriorityInOtherDfa)
             {
                 unionDfaFinalStates[*statesIt] = resolvePriorityInThisDfa;
@@ -155,11 +156,11 @@ Dfa Dfa::Union(Dfa &other)
             }
         } else if (isFinalInThisDfa)
         {
-            DfaUnionResolvePriority resolvePriorityInThisDfa = finalStates[statesIt->first];
+            TokenType resolvePriorityInThisDfa = finalStates[statesIt->first];
             unionDfaFinalStates[*statesIt] = resolvePriorityInThisDfa;
         } else if (isFinalInOtherDfa)
         {
-            DfaUnionResolvePriority resolvePriorityInOtherDfa = other.finalStates[statesIt->second];
+            TokenType resolvePriorityInOtherDfa = other.finalStates[statesIt->second];
             unionDfaFinalStates[*statesIt] = resolvePriorityInOtherDfa;
         }
 
@@ -171,8 +172,28 @@ Dfa Dfa::Union(Dfa &other)
     return CreateDfaFromPairTypeStates(unionTransitions, unionDfaFinalStates);
 }
 
+void Dfa::Move(char c)
+{
+    currentState = transitions[currentState][c];
+}
+
+bool Dfa::IsInFinalState()
+{
+    return finalStates.find(currentState) != finalStates.end();
+}
+
+bool Dfa::IsInErrorState()
+{
+    return currentState == -1;
+}
+
+TokenType Dfa::CurrentFinalStateTokenType()
+{
+    return finalStates[currentState];
+}
+
 Dfa Dfa::CreateDfaFromPairTypeStates(const map<pair<int, int>, map<char, pair<int, int>>> &unionTransitions,
-    const map<pair<int, int>, DfaUnionResolvePriority> &unionDfaFinalStates)
+    const map<pair<int, int>, TokenType> &unionDfaFinalStates)
 {
     /* Construct a translation table from int pairs to ints. */
 
@@ -192,9 +213,9 @@ Dfa Dfa::CreateDfaFromPairTypeStates(const map<pair<int, int>, map<char, pair<in
 
     /* Translate final states to ints. */
 
-    map<int, DfaUnionResolvePriority> finalStatesAsInts;
+    map<int, TokenType> finalStatesAsInts;
 
-    for (map<pair<int, int>, DfaUnionResolvePriority>::const_iterator it = unionDfaFinalStates.begin(); it != unionDfaFinalStates.end(); ++it)
+    for (map<pair<int, int>, TokenType>::const_iterator it = unionDfaFinalStates.begin(); it != unionDfaFinalStates.end(); ++it)
     {
         auto finalState = it->first;
         auto finalStatePriority = it->second;
