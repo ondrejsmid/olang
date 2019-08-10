@@ -1,3 +1,6 @@
+#ifndef DFA_H
+#define DFA_H
+
 #include <vector>
 #include <map>
 #include <set>
@@ -15,10 +18,15 @@ Note: The lower the enum value is in this source code, the higher is the priorit
 */
 enum TokenType
 {
+    Whitespace,
     VariableName,
     Number,
+    Semicolon,
+    Assign,
+    Plus,
     If,
-    Assign
+    RoundLeftBracket,
+    RoundRightBracket,
 };
 
 class Dfa
@@ -52,8 +60,12 @@ public:
 
     bool IsInErrorState();
 
+    bool GoesToErrorState(char c);
+
     TokenType CurrentFinalStateTokenType();
 
     static Dfa CreateDfaFromPairTypeStates(const std::map<std::pair<int, int>, std::map<char, std::pair<int, int>>>& unionTransitions,
                                            const std::map<std::pair<int, int>, TokenType>& unionDfaFinalStates);
 };
+
+#endif  /* DFA_H */

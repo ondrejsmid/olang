@@ -187,6 +187,11 @@ bool Dfa::IsInErrorState()
     return currentState == -1;
 }
 
+bool Dfa::GoesToErrorState(char c)
+{
+    return transitions[currentState][c] == -1;
+}
+
 TokenType Dfa::CurrentFinalStateTokenType()
 {
     return finalStates[currentState];

@@ -1,9 +1,10 @@
 #include <iostream>
-#include "lexer_dfa_gen/lexer_dfa_gen.h"
+#include "lexer/lexer.h"
 
 using namespace std;
 
 int main()
 {
-    LexerGen lexerGen;
+    char *text = "abc";
+    Lexer lexer(text, sizeof(*text));
 }
