@@ -18,6 +18,7 @@ Note: The lower the enum value is in this source code, the higher is the priorit
 */
 enum TokenType
 {
+    Invalid,
     Whitespace,
     VariableName,
     Number,
@@ -61,6 +62,8 @@ public:
     bool IsInErrorState();
 
     bool GoesToErrorState(char c);
+
+    void Reset();
 
     TokenType CurrentFinalStateTokenType();
 

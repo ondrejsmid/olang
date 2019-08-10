@@ -248,3 +248,7 @@ Dfa Dfa::CreateDfaFromPairTypeStates(const map<pair<int, int>, map<char, pair<in
     return unionDfa;
 }
 
+void Dfa::Reset()
+{
+    currentState = 0;
+}

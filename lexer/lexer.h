@@ -11,6 +11,12 @@ struct Token
 class Lexer
 {
     Dfa unionDfa;
+    char * text;
+    size_t textLen;
+    size_t idx;
+
 public:
     Lexer(char *text, size_t textLen);
+    bool HasNextToken();
+    Token GetNextToken();
 };
