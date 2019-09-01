@@ -1,6 +1,6 @@
 #include <iostream>
 #include <list>
-#include "lexer_dfa_gen.h"
+#include "lexer_gen.h"
 
 using namespace std;
 

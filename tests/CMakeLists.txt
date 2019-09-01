@@ -1,8 +1,8 @@
-add_executable(test_dfa_gen test_dfa_gen.cpp)
+add_executable(test_lexer_gen test_lexer_gen.cpp)
 add_executable(test_lexer test_lexer.cpp)
 
-target_link_libraries (test_dfa_gen Dfa LexerDfaGen)
-target_link_libraries (test_lexer Dfa Lexer LexerDfaGen)
+target_link_libraries (test_lexer_gen Dfa LexerGen)
+target_link_libraries (test_lexer Dfa Lexer LexerGen)
 
-add_test(dfa_gen test_dfa_gen)
+add_test(lexer_gen test_lexer_gen)
 add_test(lexer test_lexer)

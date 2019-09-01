@@ -1,4 +1,4 @@
-#include "../lexer_dfa_gen/lexer_dfa_gen.h"
+#include "../lexer_gen/lexer_gen.h"
 #include "../dfa/dfa.h"
 
 struct Token

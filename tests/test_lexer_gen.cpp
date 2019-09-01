@@ -1,5 +1,5 @@
 #include <cassert>
-#include "../lexer_dfa_gen/lexer_dfa_gen.h"
+#include "../lexer_gen/lexer_gen.h"
 
 void Test_Whitespace_SingleSpaceAccepted()
 {
