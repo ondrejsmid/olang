@@ -1,11 +1,12 @@
+#include <assert.h>
 #include <string>
 #include "dfa.h"
 
 using namespace std;
 
-Dfa::Dfa(int statesCnt, const map<int, TokenType> &finalStates)
+Dfa::Dfa(int statesCnt, const vector<pair<bool, TokenType>> &statesFinality)
     :
-    finalStates(finalStates),
+    statesFinality(statesFinality),
     isToStringValComputed(false),
     toStringVal(""),
     currentState(0)
@@ -37,7 +38,7 @@ ostream & operator << (ostream &out, const Dfa &dfa)
         {
             out << "state " << srcState;
 
-            if (dfa.finalStates.find(srcState) != dfa.finalStates.end())
+            if (dfa.statesFinality[srcState].first)
             {
                 out << " (final)";
             }
@@ -137,13 +138,13 @@ Dfa Dfa::Union(Dfa &other)
 
         unionTransitions[*statesIt] = targetStatesInUnionDfaForCurrent;
 
-        bool isFinalInThisDfa = finalStates.find(statesIt->first) != finalStates.end();
-        bool isFinalInOtherDfa = other.finalStates.find(statesIt->second) != other.finalStates.end();
+		bool isFinalInThisDfa = IsStateFinal(statesIt->first);
+		bool isFinalInOtherDfa = other.IsStateFinal(statesIt->second);
         
         if (isFinalInThisDfa && isFinalInOtherDfa)
         {
-            TokenType resolvePriorityInThisDfa = finalStates[statesIt->first];
-            TokenType resolvePriorityInOtherDfa = other.finalStates[statesIt->second];
+            TokenType resolvePriorityInThisDfa = FinalStateTokenType(statesIt->first);
+            TokenType resolvePriorityInOtherDfa = other.FinalStateTokenType(statesIt->second);
             if (resolvePriorityInThisDfa > resolvePriorityInOtherDfa)
             {
                 unionDfaFinalStates[*statesIt] = resolvePriorityInThisDfa;
@@ -156,11 +157,11 @@ Dfa Dfa::Union(Dfa &other)
             }
         } else if (isFinalInThisDfa)
         {
-            TokenType resolvePriorityInThisDfa = finalStates[statesIt->first];
+            TokenType resolvePriorityInThisDfa = FinalStateTokenType(statesIt->first);
             unionDfaFinalStates[*statesIt] = resolvePriorityInThisDfa;
         } else if (isFinalInOtherDfa)
         {
-            TokenType resolvePriorityInOtherDfa = other.finalStates[statesIt->second];
+            TokenType resolvePriorityInOtherDfa = other.FinalStateTokenType(statesIt->second);
             unionDfaFinalStates[*statesIt] = resolvePriorityInOtherDfa;
         }
 
@@ -177,9 +178,25 @@ void Dfa::Move(char c)
     currentState = transitions[currentState][c];
 }
 
+bool Dfa::IsStateFinal(size_t state)
+{
+	if (state == -1)
+	{
+		return false;
+	}
+	return statesFinality[state].first;
+}
+
+TokenType Dfa::FinalStateTokenType(size_t finalState)
+{
+	assert(IsStateFinal(finalState));
+
+	return statesFinality[finalState].second;
+}
+
 bool Dfa::IsInFinalState()
 {
-    return finalStates.find(currentState) != finalStates.end();
+	return IsStateFinal(currentState);
 }
 
 bool Dfa::IsInErrorState()
@@ -194,11 +211,11 @@ bool Dfa::GoesToErrorState(char c)
 
 TokenType Dfa::CurrentFinalStateTokenType()
 {
-    return finalStates[currentState];
+    return FinalStateTokenType(currentState);
 }
 
 Dfa Dfa::CreateDfaFromPairTypeStates(const map<pair<int, int>, map<char, pair<int, int>>> &unionTransitions,
-    const map<pair<int, int>, TokenType> &unionDfaFinalStates)
+    const map<pair<int, int>, TokenType> &unionDfaFinalStatesAsPairs)
 {
     /* Construct a translation table from int pairs to ints. */
 
@@ -218,18 +235,20 @@ Dfa Dfa::CreateDfaFromPairTypeStates(const map<pair<int, int>, map<char, pair<in
 
     /* Translate final states to ints. */
 
-    map<int, TokenType> finalStatesAsInts;
+	vector<pair<bool, TokenType>> unionStatesFinality(unionTransitions.size(), pair<bool, TokenType>(false, TokenType::Invalid));
 
-    for (map<pair<int, int>, TokenType>::const_iterator it = unionDfaFinalStates.begin(); it != unionDfaFinalStates.end(); ++it)
+    for (map<pair<int, int>, TokenType>::const_iterator it = unionDfaFinalStatesAsPairs.begin(); it != unionDfaFinalStatesAsPairs.end(); ++it)
     {
         auto finalState = it->first;
         auto finalStatePriority = it->second;
-        finalStatesAsInts[translationTable[finalState]] = finalStatePriority;
+
+		unionStatesFinality[translationTable[finalState]].first = true;
+		unionStatesFinality[translationTable[finalState]].second = finalStatePriority;
     }
 
     /* Translate transitions to int version. */
 
-    Dfa unionDfa(unionTransitions.size(), finalStatesAsInts);
+    Dfa unionDfa(unionTransitions.size(), unionStatesFinality);
 
     for (map<pair<int, int>, map<char, pair<int, int>>>::const_iterator srcStatesIt = unionTransitions.begin(); srcStatesIt != unionTransitions.end(); ++srcStatesIt)
     {

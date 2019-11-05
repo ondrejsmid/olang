@@ -34,14 +34,14 @@ class Dfa
 {
 private:
     std::vector<std::vector<int>> transitions;
-    std::map<int, TokenType> finalStates;
+	std::vector<std::pair<bool, TokenType>> statesFinality;
     bool isToStringValComputed;
     std::string toStringVal;
     int currentState;
 
 public:
     Dfa(){};
-    Dfa(int statesCnt, const std::map<int, TokenType> &finalStates);
+    Dfa(int statesCnt, const std::vector<std::pair<bool, TokenType>> &statesFinality);
 
     void AddTransition(int srcState, int targetState, unsigned char c);
 
@@ -55,7 +55,13 @@ public:
 
     Dfa Union(Dfa &other);
 
+	size_t StatesCnt();
+
     void Move(char c);
+
+	bool IsStateFinal(size_t state);
+
+	TokenType FinalStateTokenType(size_t finalState);
 
     bool IsInFinalState();
 

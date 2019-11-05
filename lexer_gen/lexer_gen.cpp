@@ -61,12 +61,13 @@ LexerGen::LexerGen()
 
 Dfa LexerGen::CreateEmptyDfaForTokenType(int statesCnt, std::vector<int> finalStates, TokenType tokenType)
 {
-    map<int, TokenType> finalStatesWithTokType;
+	vector<pair<bool, TokenType>> statesFinality(statesCnt, pair<bool, TokenType>(false, TokenType::Invalid));
     for (int i = 0; i < finalStates.size(); i++)
     {
-        finalStatesWithTokType[finalStates[i]] = tokenType;
+		statesFinality[finalStates[i]].first = true;
+		statesFinality[finalStates[i]].second = tokenType;
     }
-    Dfa emptyDfa(statesCnt, finalStatesWithTokType);
+    Dfa emptyDfa(statesCnt, statesFinality);
     return emptyDfa;
 }
 
