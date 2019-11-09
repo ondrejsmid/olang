@@ -1,7 +1,7 @@
 #include <cassert>
 #include "../lexer_gen/lexer_gen.h"
 
-void Test_Whitespace_SingleSpaceAccepted()
+void Whitespace_SingleSpaceAccepted()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -10,7 +10,7 @@ void Test_Whitespace_SingleSpaceAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Whitespace);
 }
 
-void Test_Whitespace_SpaceFollowebByTabAccepted()
+void Whitespace_SpaceFollowebByTabAccepted()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -20,7 +20,7 @@ void Test_Whitespace_SpaceFollowebByTabAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Whitespace);
 }
 
-void Test_Whitespace_LinuxNewlineAccepted()
+void Whitespace_LinuxNewlineAccepted()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -29,7 +29,7 @@ void Test_Whitespace_LinuxNewlineAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Whitespace);
 }
 
-void Test_Whitespace_WindowsNewlineAccepted()
+void Whitespace_WindowsNewlineAccepted()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -39,7 +39,7 @@ void Test_Whitespace_WindowsNewlineAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Whitespace);
 }
 
-void TestKeywordIsPreferredOverVariableName()
+void KeywordIsPreferredOverVariableName()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -57,7 +57,7 @@ void TestKeywordIsPreferredOverVariableName()
     assert(unionDfa.IsInErrorState());
 }
 
-void Test_VariableName_ShallNotStartWithDigit()
+void VariableName_ShallNotStartWithDigit()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -68,7 +68,7 @@ void Test_VariableName_ShallNotStartWithDigit()
     }
 }
 
-void Test_Number_ZeroIsAccepted()
+void Number_ZeroIsAccepted()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -77,7 +77,7 @@ void Test_Number_ZeroIsAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Number);
 }
 
-void Test_Number_PositiveNumIsAccepted_1()
+void Number_PositiveNumIsAccepted_1()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -86,7 +86,7 @@ void Test_Number_PositiveNumIsAccepted_1()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Number);
 }
 
-void Test_Number_PositiveNumIsAccepted_12()
+void Number_PositiveNumIsAccepted_12()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -96,7 +96,7 @@ void Test_Number_PositiveNumIsAccepted_12()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Number);
 }
 
-void Test_Number_NegativeNumIsAccepted_Minus7()
+void Number_NegativeNumIsAccepted_Minus7()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -106,7 +106,7 @@ void Test_Number_NegativeNumIsAccepted_Minus7()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Number);
 }
 
-void Test_Number_NegativeNumIsAccepted_Minus78()
+void Number_NegativeNumIsAccepted_Minus78()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -117,7 +117,7 @@ void Test_Number_NegativeNumIsAccepted_Minus78()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Number);
 }
 
-void Test_Number_SingleDashIsNotAccepted()
+void Number_SingleDashIsNotAccepted()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -128,7 +128,7 @@ void Test_Number_SingleDashIsNotAccepted()
     }
 }
 
-void Test_Number_DashFollowedByZeroIsNotAccepted()
+void Number_DashFollowedByZeroIsNotAccepted()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -140,7 +140,7 @@ void Test_Number_DashFollowedByZeroIsNotAccepted()
     }
 }
 
-void Test_SemicolonAccepted()
+void SemicolonAccepted()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -149,7 +149,7 @@ void Test_SemicolonAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Semicolon);
 }
 
-void Test_AssignAccepted()
+void AssignAccepted()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -158,7 +158,7 @@ void Test_AssignAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Assign);
 }
 
-void Test_PlusAccepted()
+void PlusAccepted()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -167,7 +167,7 @@ void Test_PlusAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Plus);
 }
 
-void Test_IfAccepted()
+void IfAccepted()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -177,7 +177,7 @@ void Test_IfAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::If);
 }
 
-void Test_RoundLeftBracketAccepted()
+void RoundLeftBracketAccepted()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -186,7 +186,7 @@ void Test_RoundLeftBracketAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::RoundLeftBracket);
 }
 
-void Test_RoundRightBracketAccepted()
+void RoundRightBracketAccepted()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -195,24 +195,34 @@ void Test_RoundRightBracketAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::RoundRightBracket);
 }
 
+void InvalidOneCharWordNotAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('@');
+    assert(unionDfa.IsInErrorState());
+    assert(!unionDfa.IsInFinalState());
+}
+
 int main()
 {
-    Test_Whitespace_SingleSpaceAccepted();
-    Test_Whitespace_SpaceFollowebByTabAccepted();
-    Test_Whitespace_LinuxNewlineAccepted();
-    Test_Whitespace_WindowsNewlineAccepted();
-    TestKeywordIsPreferredOverVariableName();
-    Test_VariableName_ShallNotStartWithDigit();
-    Test_Number_ZeroIsAccepted();
-    Test_Number_PositiveNumIsAccepted_1();
-    Test_Number_PositiveNumIsAccepted_12();
-    Test_Number_NegativeNumIsAccepted_Minus7();
-    Test_Number_NegativeNumIsAccepted_Minus78();
-    Test_Number_DashFollowedByZeroIsNotAccepted();
-    Test_SemicolonAccepted();
-    Test_AssignAccepted();
-    Test_PlusAccepted();
-    Test_IfAccepted();
-    Test_RoundLeftBracketAccepted();
-    Test_RoundRightBracketAccepted();
+    Whitespace_SingleSpaceAccepted();
+    Whitespace_SpaceFollowebByTabAccepted();
+    Whitespace_LinuxNewlineAccepted();
+    Whitespace_WindowsNewlineAccepted();
+    KeywordIsPreferredOverVariableName();
+    VariableName_ShallNotStartWithDigit();
+    Number_ZeroIsAccepted();
+    Number_PositiveNumIsAccepted_1();
+    Number_PositiveNumIsAccepted_12();
+    Number_NegativeNumIsAccepted_Minus7();
+    Number_NegativeNumIsAccepted_Minus78();
+    Number_DashFollowedByZeroIsNotAccepted();
+    SemicolonAccepted();
+    AssignAccepted();
+    PlusAccepted();
+    IfAccepted();
+    RoundLeftBracketAccepted();
+    RoundRightBracketAccepted();
+    InvalidOneCharWordNotAccepted();
 }

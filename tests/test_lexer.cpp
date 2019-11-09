@@ -1,7 +1,7 @@
 #include <cassert>
 #include "../lexer/lexer.h"
 
-int main()
+void GetNextToken_ForValidTokenText_ReturnsCorrectTokens()
 {
     char *text = "abc  \t  \r\n xyz123 4";
     Lexer lexer(text, strlen(text));
@@ -202,4 +202,23 @@ int main()
     assert(token.endIdx == 24);
 
     assert(!lexer.HasNextToken());
+}
+
+void GetNextToken_DetectsInvalidToken()
+{
+    char *text = "abc @ 4";
+    Lexer lexer(text, strlen(text));
+
+    lexer.GetNextToken();
+    lexer.GetNextToken();
+    Token token = lexer.GetNextToken();
+    assert(token.tokenType == TokenType::Invalid);
+    assert(token.startIdx == 4);
+    assert(token.endIdx == 4);
+}
+
+int main()
+{
+    GetNextToken_ForValidTokenText_ReturnsCorrectTokens();
+    GetNextToken_DetectsInvalidToken();
 }

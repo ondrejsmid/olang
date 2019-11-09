@@ -18,5 +18,6 @@ class Lexer
 public:
     Lexer(char *text, size_t textLen);
     bool HasNextToken();
-    Token GetNextToken();
+	Token GetNextToken();
+	Token GetNextNonWhitespaceToken();
 };
