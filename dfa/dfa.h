@@ -19,6 +19,7 @@ Note: The lower the enum value is in this source code, the higher is the priorit
 enum TokenType
 {
     Invalid,
+    Eof,
     Whitespace,
     VariableName,
     Number,

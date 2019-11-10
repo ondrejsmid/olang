@@ -200,6 +200,9 @@ void GetNextToken_ForValidTokenText_ReturnsCorrectTokens()
     assert(token.tokenType == TokenType::RoundRightBracket);
     assert(token.startIdx == 24);
     assert(token.endIdx == 24);
+    
+    token = lexer.GetNextToken();
+    assert(token.tokenType == TokenType::Eof);
 
     assert(!lexer.HasNextToken());
 }
@@ -217,8 +220,46 @@ void GetNextToken_DetectsInvalidToken()
     assert(token.endIdx == 4);
 }
 
+void GetNextNonWhitespaceToken_ForValidTokenText_ReturnsCorrectNonWhitespaceTokens()
+{
+    char *text = "abc  \t  \r\n xyz123 4";
+    Lexer lexer(text, strlen(text));
+
+    Token token = lexer.GetNextNonWhitespaceToken();
+    assert(token.tokenType == TokenType::VariableName);
+    assert(token.startIdx == 0);
+    assert(token.endIdx == 2);
+
+    token = lexer.GetNextNonWhitespaceToken();
+    assert(token.tokenType == TokenType::VariableName);
+    assert(token.startIdx == 11);
+    assert(token.endIdx == 16);
+
+    token = lexer.GetNextNonWhitespaceToken();
+    assert(token.tokenType == TokenType::Number);
+    assert(token.startIdx == 18);
+    assert(token.endIdx == 18);
+
+    token = lexer.GetNextNonWhitespaceToken();
+    assert(token.tokenType == TokenType::Eof);
+}
+
+void GetNextNonWhitespaceToken_DetectsInvalidToken()
+{
+    char *text = "abc @ 4";
+    Lexer lexer(text, strlen(text));
+
+    lexer.GetNextNonWhitespaceToken();
+    Token token = lexer.GetNextNonWhitespaceToken();
+    assert(token.tokenType == TokenType::Invalid);
+    assert(token.startIdx == 4);
+    assert(token.endIdx == 4);
+}
+
 int main()
 {
     GetNextToken_ForValidTokenText_ReturnsCorrectTokens();
     GetNextToken_DetectsInvalidToken();
+    GetNextNonWhitespaceToken_ForValidTokenText_ReturnsCorrectNonWhitespaceTokens();
+    GetNextNonWhitespaceToken_DetectsInvalidToken();
 }

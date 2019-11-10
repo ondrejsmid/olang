@@ -18,7 +18,12 @@ bool Lexer::HasNextToken()
 
 Token Lexer::GetNextToken()
 {
-	assert(idx != textLen);
+    if (idx == textLen)
+    {
+        Token token;
+        token.tokenType = TokenType::Eof;
+        return token;
+    }
 
     unionDfa.Reset();
     size_t tokenStartIdx = idx;
@@ -46,9 +51,12 @@ Token Lexer::GetNextToken()
 
 Token Lexer::GetNextNonWhitespaceToken()
 {
-	Token token;
-	while (idx != textLen && (token = GetNextToken()).tokenType != TokenType::Whitespace)
-	{
-	}
-	return token;
+	Token token = GetNextToken();
+    if (token.tokenType == TokenType::Whitespace)
+    {
+        return GetNextToken();
+    }
+    else {
+        return token;
+    }
 }

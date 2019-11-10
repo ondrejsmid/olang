@@ -177,7 +177,7 @@ void IfAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::If);
 }
 
-void RoundLeftBracketAccepted()
+void LeftRoundBracketAccepted()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -186,7 +186,7 @@ void RoundLeftBracketAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::RoundLeftBracket);
 }
 
-void RoundRightBracketAccepted()
+void RightRoundBracketAccepted()
 {
     LexerGen lexer_gen;
     Dfa unionDfa = lexer_gen.unionDfa;
@@ -222,7 +222,7 @@ int main()
     AssignAccepted();
     PlusAccepted();
     IfAccepted();
-    RoundLeftBracketAccepted();
-    RoundRightBracketAccepted();
+    LeftRoundBracketAccepted();
+    RightRoundBracketAccepted();
     InvalidOneCharWordNotAccepted();
 }
