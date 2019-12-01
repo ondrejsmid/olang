@@ -24,7 +24,7 @@ enum TokenType
     VariableName,
     Number,
     Semicolon,
-    Assign,
+    Assignment,
     Plus,
     If,
     RoundLeftBracket,

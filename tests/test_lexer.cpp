@@ -102,7 +102,7 @@ void GetNextToken_ForValidTokenText_ReturnsCorrectTokens()
     assert(token.endIdx == 1);
 
     token = lexer.GetNextToken();
-    assert(token.tokenType == TokenType::Assign);
+    assert(token.tokenType == TokenType::Assignment);
     assert(token.startIdx == 2);
     assert(token.endIdx == 2);
 
@@ -147,7 +147,7 @@ void GetNextToken_ForValidTokenText_ReturnsCorrectTokens()
     assert(token.endIdx == 11);
 
     token = lexer.GetNextToken();
-    assert(token.tokenType == TokenType::Assign);
+    assert(token.tokenType == TokenType::Assignment);
     assert(token.startIdx == 12);
     assert(token.endIdx == 12);
 

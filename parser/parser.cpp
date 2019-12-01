@@ -1,0 +1,71 @@
+#include <stdexcept>
+#include "parser.h"
+
+using namespace std;
+
+ProgramNode::~ProgramNode()
+{
+    for (auto i = 0; i < statements.size(); i++)
+    {
+        delete statements[i];
+    }
+}
+
+AssignmentNode::~AssignmentNode()
+{
+    delete rightSideExpr;
+}
+
+Parser::Parser(char *text, size_t textLen)
+    :
+lexer(text, textLen)
+{
+}
+
+ProgramNode * Parser::Parse()
+{
+    auto programNode = new ProgramNode();
+    while (true)
+    {
+        auto token = lexer.GetNextNonWhitespaceToken();
+        switch (token.tokenType)
+        {
+            case TokenType::VariableName:
+                programNode->statements.push_back(ParseAssignment(token));
+                
+                break;
+            case TokenType::Eof:
+                return programNode;
+            default:
+                throw runtime_error("parse error");
+        }
+    }
+}
+
+Token Parser::GetTokenThrowExceptionIfWrongType(TokenType tokenType)
+{
+    auto token = lexer.GetNextNonWhitespaceToken();
+    if (token.tokenType != tokenType)
+    {
+        throw runtime_error("parse error");
+    }
+    return token;
+}
+
+AssignmentNode * Parser::ParseAssignment(const Token & variableNameToken)
+{
+    auto assignmentNode = new AssignmentNode();
+    assignmentNode->variableNameToken = variableNameToken;
+    assignmentNode->assignmentToken = GetTokenThrowExceptionIfWrongType(TokenType::Assignment);
+    assignmentNode->rightSideExpr = ParseExpr();
+    assignmentNode->semicolonToken = GetTokenThrowExceptionIfWrongType(TokenType::Semicolon);
+    return assignmentNode;
+}
+
+ExprNode * Parser::ParseExpr()
+{
+    auto numberNode = new NumberNode();
+    numberNode->numberToken = GetTokenThrowExceptionIfWrongType(TokenType::Number);
+    return numberNode;
+}
+

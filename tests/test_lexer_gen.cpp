@@ -155,7 +155,7 @@ void AssignAccepted()
     Dfa unionDfa = lexer_gen.unionDfa;
     unionDfa.Move('=');
     assert(unionDfa.IsInFinalState());
-    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Assign);
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Assignment);
 }
 
 void PlusAccepted()

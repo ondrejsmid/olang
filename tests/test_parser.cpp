@@ -1,11 +1,7 @@
-#include <iostream>
-#include <list>
-#include <string.h>
-#include "parser/parser.h"
+#include <cassert>
+#include "../parser/parser.h"
 
-using namespace std;
-
-int main()
+void Parse_ParsesProgram()
 {
     char *text =
         " a = 5; "
@@ -13,5 +9,13 @@ int main()
         " c =  -2; ";
     Parser parser(text, strlen(text));
     auto ast = parser.Parse();
+
+    assert(ast->statements.size() == 3);
+
     delete ast;
+}
+
+int main()
+{
+    Parse_ParsesProgram();
 }

@@ -37,7 +37,7 @@ LexerGen::LexerGen()
 
     allTokenDfas.push_back(CreateKeywordDfa(";", TokenType::Semicolon));
 
-    allTokenDfas.push_back(CreateKeywordDfa("=", TokenType::Assign));
+    allTokenDfas.push_back(CreateKeywordDfa("=", TokenType::Assignment));
 
     allTokenDfas.push_back(CreateKeywordDfa("+", TokenType::Plus));
 
