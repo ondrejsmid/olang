@@ -1,6 +1,7 @@
 #ifndef DFA_H
 #define DFA_H
 
+#include <iostream>
 #include <vector>
 #include <map>
 #include <set>
