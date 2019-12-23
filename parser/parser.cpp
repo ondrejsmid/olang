@@ -71,8 +71,25 @@ AssignmentNode * Parser::ParseAssignment(const Token & variableNameToken)
 
 ExprNode * Parser::ParseExpr()
 {
-    auto numberNode = new NumberNode();
-    numberNode->numberToken = GetTokenThrowExceptionIfWrongType(TokenType::Number);
-    return numberNode;
+    auto token = lexer.GetNextNonWhitespaceToken();
+    switch (token.tokenType)
+    {
+    case TokenType::Number:
+    {
+        auto numberNode = new NumberNode();
+        numberNode->numberToken = token;
+        return numberNode;
+    }
+
+    case TokenType::VariableName:
+    {
+        auto rightSideVariableNode = new RightSideVariableNode();
+        rightSideVariableNode->variableNameToken = token;
+        return rightSideVariableNode;
+    }
+
+    default:
+        throw runtime_error("parse error");
+    }
 }
 

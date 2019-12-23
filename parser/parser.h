@@ -23,6 +23,11 @@ struct NumberNode : ExprNode
     Token numberToken;
 };
 
+struct RightSideVariableNode : ExprNode
+{
+    Token variableNameToken;
+};
+
 struct AssignmentNode : AstNode
 {
     Token variableNameToken;

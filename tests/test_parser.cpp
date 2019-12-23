@@ -39,6 +39,15 @@ void AssertTrees(AstNode* expected, AstNode* actual)
         
         assert(expectedCasted->numberToken == actualCasted->numberToken);
     }
+    else if (dynamic_cast<RightSideVariableNode*>(expected) != NULL)
+    {
+        assert(dynamic_cast<RightSideVariableNode*>(actual) != NULL);
+
+        RightSideVariableNode* expectedCasted = (RightSideVariableNode*)(expected);
+        RightSideVariableNode* actualCasted = (RightSideVariableNode*)(actual);
+
+        assert(expectedCasted->variableNameToken == actualCasted->variableNameToken);
+    }
 }
 
 void Parse_Program()
@@ -89,9 +98,33 @@ void Parse_Program()
     delete actualAst;
 }
 
+void Parse_AssignmentOfRightSideVariable()
+{
+    char* text = "a = b;";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto rightSideVariable = new RightSideVariableNode();
+    rightSideVariable->variableNameToken = Token(TokenType::VariableName, 4, 4);
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 5, 5);
+    assignment0->rightSideExpr = rightSideVariable;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete expectedAst;
+    delete actualAst;
+}
+
 int main()
 {
-    AstNode* progNode = new ProgramNode();
-    delete progNode;
     Parse_Program();
+    Parse_AssignmentOfRightSideVariable();
 }
