@@ -1,7 +1,11 @@
 #include "../lexer/lexer.h"
 
+#ifndef PARSER_H
+#define PARSER_H
+
 struct AstNode
 {
+    virtual ~AstNode() {};
 };
 
 struct ProgramNode : AstNode
@@ -25,6 +29,7 @@ struct AssignmentNode : AstNode
     Token assignmentToken;
     Token semicolonToken;
     ExprNode * rightSideExpr;
+    AssignmentNode();
     ~AssignmentNode();
 };
 
@@ -40,3 +45,5 @@ private:
     AssignmentNode * ParseAssignment(const Token & variableNameToken);
     ExprNode * ParseExpr();
 };
+
+#endif

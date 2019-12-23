@@ -1,3 +1,4 @@
+#include "parser.h"
 #include <stdexcept>
 #include "parser.h"
 
@@ -11,6 +12,12 @@ ProgramNode::~ProgramNode()
     }
 }
 
+AssignmentNode::AssignmentNode()
+    :
+    rightSideExpr(NULL)
+{
+}
+
 AssignmentNode::~AssignmentNode()
 {
     delete rightSideExpr;
@@ -18,8 +25,18 @@ AssignmentNode::~AssignmentNode()
 
 Parser::Parser(char *text, size_t textLen)
     :
-lexer(text, textLen)
+    lexer(text, textLen)
 {
+}
+
+Token Parser::GetTokenThrowExceptionIfWrongType(TokenType tokenType)
+{
+    auto token = lexer.GetNextNonWhitespaceToken();
+    if (token.tokenType != tokenType)
+    {
+        throw runtime_error("parse error");
+    }
+    return token;
 }
 
 ProgramNode * Parser::Parse()
@@ -40,16 +57,6 @@ ProgramNode * Parser::Parse()
                 throw runtime_error("parse error");
         }
     }
-}
-
-Token Parser::GetTokenThrowExceptionIfWrongType(TokenType tokenType)
-{
-    auto token = lexer.GetNextNonWhitespaceToken();
-    if (token.tokenType != tokenType)
-    {
-        throw runtime_error("parse error");
-    }
-    return token;
 }
 
 AssignmentNode * Parser::ParseAssignment(const Token & variableNameToken)
