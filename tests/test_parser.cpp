@@ -48,6 +48,27 @@ void AssertTrees(AstNode* expected, AstNode* actual)
 
         assert(expectedCasted->variableNameToken == actualCasted->variableNameToken);
     }
+    else if (dynamic_cast<AssocOperationNode*>(expected) != NULL)
+    {
+        assert(dynamic_cast<AssocOperationNode*>(actual) != NULL);
+
+        AssocOperationNode* expectedCasted = (AssocOperationNode*)(expected);
+        AssocOperationNode* actualCasted = (AssocOperationNode*)(actual);
+
+        assert(std::equal(expectedCasted->tokensBetweenOperands.begin(), expectedCasted->tokensBetweenOperands.end(), actualCasted->tokensBetweenOperands.begin()));
+
+        auto expectedOperand = expectedCasted->operands.begin();
+        auto actualOperand = actualCasted->operands.begin();
+        while (expectedOperand != expectedCasted->operands.end())
+        {
+            AssertTrees(*expectedOperand, *actualOperand);
+            ++expectedOperand;
+            ++actualOperand;
+        }
+    }
+    else {
+        assert(!"Not yet supported AST node types found.");
+    }
 }
 
 void Parse_Program()
@@ -123,8 +144,41 @@ void Parse_AssignmentOfRightSideVariable()
     delete actualAst;
 }
 
+void Parse_AssignmentOfAssocOperation()
+{
+    char* text = "a = b + 2;";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+    
+    auto rightSideVariable = new RightSideVariableNode();
+    rightSideVariable->variableNameToken = Token(TokenType::VariableName, 4, 4);
+
+    auto number = new NumberNode();
+    number->numberToken = Token(TokenType::Number, 8, 8);
+
+    auto assocOperationNode = new AssocOperationNode();
+    assocOperationNode->operands.push_back(rightSideVariable);
+    assocOperationNode->operands.push_back(number);
+    assocOperationNode->tokensBetweenOperands.push_back(Token(TokenType::Plus, 6, 6));
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 9, 9);
+    assignment0->rightSideExpr = assocOperationNode;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete actualAst;
+}
+
 int main()
 {
     Parse_Program();
     Parse_AssignmentOfRightSideVariable();
+    Parse_AssignmentOfAssocOperation();
 }

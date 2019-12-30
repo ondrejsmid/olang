@@ -28,6 +28,12 @@ struct RightSideVariableNode : ExprNode
     Token variableNameToken;
 };
 
+struct AssocOperationNode : ExprNode
+{
+    std::vector<ExprNode*> operands;
+    std::vector<Token> tokensBetweenOperands;
+};
+
 struct AssignmentNode : AstNode
 {
     Token variableNameToken;
@@ -48,7 +54,7 @@ private:
     Lexer lexer;
     Token GetTokenThrowExceptionIfWrongType(TokenType tokenType);
     AssignmentNode * ParseAssignment(const Token & variableNameToken);
-    ExprNode * ParseExpr();
+    ExprNode * ParseExpr(Token* semicolonToken);
 };
 
 #endif
