@@ -34,6 +34,18 @@ struct AssocOperationNode : ExprNode
     std::vector<Token> tokensBetweenOperands;
 };
 
+struct EnclosedExpr : ExprNode
+{
+    Token leftRoundBracketToken;
+    Token rightRoundBracketToken;
+    ExprNode* innerExpr;
+};
+
+struct UnaryMinusNode : EnclosedExpr
+{
+    Token unaryMinusToken;
+};
+
 struct AssignmentNode : AstNode
 {
     Token variableNameToken;

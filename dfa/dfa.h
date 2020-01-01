@@ -27,9 +27,10 @@ enum TokenType
     Semicolon,
     Assignment,
     Plus,
+    UnaryMinus,
     If,
-    RoundLeftBracket,
-    RoundRightBracket,
+    LeftRoundBracket,
+    RightRoundBracket,
 };
 
 class Dfa

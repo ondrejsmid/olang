@@ -67,22 +67,22 @@ void GetNextToken_ForValidTokenText_ReturnsCorrectTokens()
     lexer = Lexer(text, strlen(text));
 
     token = lexer.GetNextToken();
-    assert(token.tokenType == TokenType::RoundLeftBracket);
+    assert(token.tokenType == TokenType::LeftRoundBracket);
     assert(token.startIdx == 0);
     assert(token.endIdx == 0);
 
     token = lexer.GetNextToken();
-    assert(token.tokenType == TokenType::RoundLeftBracket);
+    assert(token.tokenType == TokenType::LeftRoundBracket);
     assert(token.startIdx == 1);
     assert(token.endIdx == 1);
 
     token = lexer.GetNextToken();
-    assert(token.tokenType == TokenType::RoundRightBracket);
+    assert(token.tokenType == TokenType::RightRoundBracket);
     assert(token.startIdx == 2);
     assert(token.endIdx == 2);
 
     token = lexer.GetNextToken();
-    assert(token.tokenType == TokenType::RoundRightBracket);
+    assert(token.tokenType == TokenType::RightRoundBracket);
     assert(token.startIdx == 3);
     assert(token.endIdx == 3);
 
@@ -177,7 +177,7 @@ void GetNextToken_ForValidTokenText_ReturnsCorrectTokens()
     assert(token.endIdx == 19);
 
     token = lexer.GetNextToken();
-    assert(token.tokenType == TokenType::RoundLeftBracket);
+    assert(token.tokenType == TokenType::LeftRoundBracket);
     assert(token.startIdx == 20);
     assert(token.endIdx == 20);
 
@@ -197,7 +197,7 @@ void GetNextToken_ForValidTokenText_ReturnsCorrectTokens()
     assert(token.endIdx == 23);
 
     token = lexer.GetNextToken();
-    assert(token.tokenType == TokenType::RoundRightBracket);
+    assert(token.tokenType == TokenType::RightRoundBracket);
     assert(token.startIdx == 24);
     assert(token.endIdx == 24);
     

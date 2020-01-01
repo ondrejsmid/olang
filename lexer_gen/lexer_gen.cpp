@@ -41,11 +41,13 @@ LexerGen::LexerGen()
 
     allTokenDfas.push_back(CreateKeywordDfa("+", TokenType::Plus));
 
+    allTokenDfas.push_back(CreateKeywordDfa("-", TokenType::UnaryMinus));
+
     allTokenDfas.push_back(CreateKeywordDfa("if", TokenType::If));
 
-    allTokenDfas.push_back(CreateKeywordDfa("(", TokenType::RoundLeftBracket));
+    allTokenDfas.push_back(CreateKeywordDfa("(", TokenType::LeftRoundBracket));
 
-    allTokenDfas.push_back(CreateKeywordDfa(")", TokenType::RoundRightBracket));
+    allTokenDfas.push_back(CreateKeywordDfa(")", TokenType::RightRoundBracket));
 
     list<Dfa>::iterator tokenDfa = allTokenDfas.begin();
     Dfa unionDfa = *tokenDfa;

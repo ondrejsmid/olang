@@ -57,6 +57,7 @@ void AssertTrees(AstNode* expected, AstNode* actual)
 
         assert(std::equal(expectedCasted->tokensBetweenOperands.begin(), expectedCasted->tokensBetweenOperands.end(), actualCasted->tokensBetweenOperands.begin()));
 
+        assert(expectedCasted->operands.size() == actualCasted->operands.size());
         auto expectedOperand = expectedCasted->operands.begin();
         auto actualOperand = actualCasted->operands.begin();
         while (expectedOperand != expectedCasted->operands.end())
@@ -65,6 +66,29 @@ void AssertTrees(AstNode* expected, AstNode* actual)
             ++expectedOperand;
             ++actualOperand;
         }
+    }
+    else if (dynamic_cast<EnclosedExpr*>(expected) != NULL)
+    {
+        assert(dynamic_cast<EnclosedExpr*>(actual) != NULL);
+
+        EnclosedExpr* expectedCasted = (EnclosedExpr*)(expected);
+        EnclosedExpr* actualCasted = (EnclosedExpr*)(actual);
+
+        assert(expectedCasted->leftRoundBracketToken == actualCasted->leftRoundBracketToken);
+        assert(expectedCasted->rightRoundBracketToken == actualCasted->rightRoundBracketToken);
+        AssertTrees(expectedCasted->innerExpr, actualCasted->innerExpr);
+    }
+    else if (dynamic_cast<UnaryMinusNode*>(expected) != NULL)
+    {
+        assert(dynamic_cast<UnaryMinusNode*>(actual) != NULL);
+
+        UnaryMinusNode* expectedCasted = (UnaryMinusNode*)(expected);
+        UnaryMinusNode* actualCasted = (UnaryMinusNode*)(actual);
+
+        assert(expectedCasted->leftRoundBracketToken == actualCasted->leftRoundBracketToken);
+        assert(expectedCasted->rightRoundBracketToken == actualCasted->rightRoundBracketToken);
+        assert(expectedCasted->unaryMinusToken == actualCasted->unaryMinusToken);
+        AssertTrees(expectedCasted->innerExpr, actualCasted->innerExpr);
     }
     else {
         assert(!"Not yet supported AST node types found.");
@@ -144,7 +168,7 @@ void Parse_AssignmentOfRightSideVariable()
     delete actualAst;
 }
 
-void Parse_AssignmentOfAssocOperation()
+void Parse_AssignmentOfAssocOperation_Addition_TC1()
 {
     char* text = "a = b + 2;";
 
@@ -157,16 +181,201 @@ void Parse_AssignmentOfAssocOperation()
     auto number = new NumberNode();
     number->numberToken = Token(TokenType::Number, 8, 8);
 
-    auto assocOperationNode = new AssocOperationNode();
-    assocOperationNode->operands.push_back(rightSideVariable);
-    assocOperationNode->operands.push_back(number);
-    assocOperationNode->tokensBetweenOperands.push_back(Token(TokenType::Plus, 6, 6));
+    auto assocOperation = new AssocOperationNode();
+    assocOperation->operands.push_back(rightSideVariable);
+    assocOperation->operands.push_back(number);
+    assocOperation->tokensBetweenOperands.push_back(Token(TokenType::Plus, 6, 6));
 
     auto assignment0 = new AssignmentNode();
     assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
     assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
     assignment0->semicolonToken = Token(TokenType::Semicolon, 9, 9);
-    assignment0->rightSideExpr = assocOperationNode;
+    assignment0->rightSideExpr = assocOperation;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete actualAst;
+}
+
+void Parse_AssignmentOfAssocOperation_Addition_TC2()
+{
+    char* text = "a = b + 2 + c;";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto rightSideVariable0 = new RightSideVariableNode();
+    rightSideVariable0->variableNameToken = Token(TokenType::VariableName, 4, 4);
+
+    auto number = new NumberNode();
+    number->numberToken = Token(TokenType::Number, 8, 8);
+
+    auto rightSideVariable1 = new RightSideVariableNode();
+    rightSideVariable1->variableNameToken = Token(TokenType::VariableName, 12, 12);
+
+    auto assocOperation = new AssocOperationNode();
+    assocOperation->operands.push_back(rightSideVariable0);
+    assocOperation->operands.push_back(number);
+    assocOperation->operands.push_back(rightSideVariable1);
+    assocOperation->tokensBetweenOperands.push_back(Token(TokenType::Plus, 6, 6));
+    assocOperation->tokensBetweenOperands.push_back(Token(TokenType::Plus, 10, 10));
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 13, 13);
+    assignment0->rightSideExpr = assocOperation;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete actualAst;
+}
+
+void Parse_AssignmentOfEnclosedExpr()
+{
+    char* text = "a = (b);";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto rightSideVariable = new RightSideVariableNode();
+    rightSideVariable->variableNameToken = Token(TokenType::VariableName, 5, 5);
+
+    auto enclosedExpr = new EnclosedExpr();
+    enclosedExpr->leftRoundBracketToken = Token(TokenType::LeftRoundBracket, 4, 4);
+    enclosedExpr->rightRoundBracketToken = Token(TokenType::RightRoundBracket, 6, 6);
+    enclosedExpr->innerExpr = rightSideVariable;
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 7, 7);
+    assignment0->rightSideExpr = enclosedExpr;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete actualAst;
+}
+
+void Parse_AssignmentOfUnaryMinus_TC1()
+{
+    char* text = "a = -(b);";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto rightSideVariable = new RightSideVariableNode();
+    rightSideVariable->variableNameToken = Token(TokenType::VariableName, 6, 6);
+
+    auto unaryMinus = new UnaryMinusNode();
+    unaryMinus->unaryMinusToken = Token(TokenType::UnaryMinus, 4, 4);
+    unaryMinus->leftRoundBracketToken = Token(TokenType::LeftRoundBracket, 5, 5);
+    unaryMinus->rightRoundBracketToken = Token(TokenType::RightRoundBracket, 7, 7);
+    unaryMinus->innerExpr = rightSideVariable;
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 8, 8);
+    assignment0->rightSideExpr = unaryMinus;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete actualAst;
+}
+
+void Parse_AssignmentOfUnaryMinus_TC2()
+{
+    char* text = "a = -(b + 2);";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto rightSideVariable = new RightSideVariableNode();
+    rightSideVariable->variableNameToken = Token(TokenType::VariableName, 6, 6);
+
+    auto number = new NumberNode();
+    number->numberToken = Token(TokenType::Number, 10, 10);
+
+    auto assocOperation = new AssocOperationNode();
+    assocOperation->operands.push_back(rightSideVariable);
+    assocOperation->operands.push_back(number);
+    assocOperation->tokensBetweenOperands.push_back(Token(TokenType::Plus, 8, 8));
+
+    auto unaryMinus = new UnaryMinusNode();
+    unaryMinus->unaryMinusToken = Token(TokenType::UnaryMinus, 4, 4);
+    unaryMinus->leftRoundBracketToken = Token(TokenType::LeftRoundBracket, 5, 5);
+    unaryMinus->rightRoundBracketToken = Token(TokenType::RightRoundBracket, 11, 11);
+    unaryMinus->innerExpr = assocOperation;
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 12, 12);
+    assignment0->rightSideExpr = unaryMinus;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete actualAst;
+}
+
+void Parse_AssignmentOfUnaryMinus_TC3()
+{
+    char* text = "a = -(b + 2) + c + d;";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto rightSideVariable0 = new RightSideVariableNode();
+    rightSideVariable0->variableNameToken = Token(TokenType::VariableName, 6, 6);
+
+    auto number = new NumberNode();
+    number->numberToken = Token(TokenType::Number, 10, 10);
+
+    auto assocOperation0 = new AssocOperationNode();
+    assocOperation0->operands.push_back(rightSideVariable0);
+    assocOperation0->operands.push_back(number);
+    assocOperation0->tokensBetweenOperands.push_back(Token(TokenType::Plus, 8, 8));
+
+    auto unaryMinus = new UnaryMinusNode();
+    unaryMinus->unaryMinusToken = Token(TokenType::UnaryMinus, 4, 4);
+    unaryMinus->leftRoundBracketToken = Token(TokenType::LeftRoundBracket, 5, 5);
+    unaryMinus->rightRoundBracketToken = Token(TokenType::RightRoundBracket, 11, 11);
+    unaryMinus->innerExpr = assocOperation0;
+
+    auto rightSideVariable1 = new RightSideVariableNode();
+    rightSideVariable1->variableNameToken = Token(TokenType::VariableName, 15, 15);
+
+    auto rightSideVariable2 = new RightSideVariableNode();
+    rightSideVariable2->variableNameToken = Token(TokenType::VariableName, 19, 19);
+
+    auto assocOperation1 = new AssocOperationNode();
+    assocOperation1->operands.push_back(unaryMinus);
+    assocOperation1->operands.push_back(rightSideVariable1);
+    assocOperation1->operands.push_back(rightSideVariable2);
+    assocOperation1->tokensBetweenOperands.push_back(Token(TokenType::Plus, 13, 13));
+    assocOperation1->tokensBetweenOperands.push_back(Token(TokenType::Plus, 17, 17));
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 20, 20);
+    assignment0->rightSideExpr = assocOperation1;
 
     auto expectedAst = new ProgramNode();
     expectedAst->statements.push_back(assignment0);
@@ -180,5 +389,10 @@ int main()
 {
     Parse_Program();
     Parse_AssignmentOfRightSideVariable();
-    Parse_AssignmentOfAssocOperation();
+    Parse_AssignmentOfAssocOperation_Addition_TC1();
+    Parse_AssignmentOfAssocOperation_Addition_TC2();
+    Parse_AssignmentOfEnclosedExpr();
+    Parse_AssignmentOfUnaryMinus_TC1();
+    Parse_AssignmentOfUnaryMinus_TC2();
+    Parse_AssignmentOfUnaryMinus_TC3();
 }

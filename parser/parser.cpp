@@ -41,18 +41,18 @@ Token Parser::GetTokenThrowExceptionIfWrongType(TokenType tokenType)
 
 ProgramNode * Parser::Parse()
 {
-    auto programNode = new ProgramNode();
+    auto program = new ProgramNode();
     while (true)
     {
         auto token = lexer.GetNextNonWhitespaceToken();
         switch (token.tokenType)
         {
             case TokenType::VariableName:
-                programNode->statements.push_back(ParseAssignment(token));
+                program->statements.push_back(ParseAssignment(token));
                 break;
 
             case TokenType::Eof:
-                return programNode;
+                return program;
 
             default:
                 throw runtime_error("parse error");
@@ -62,19 +62,19 @@ ProgramNode * Parser::Parse()
 
 AssignmentNode * Parser::ParseAssignment(const Token & variableNameToken)
 {
-    auto assignmentNode = new AssignmentNode();
-    assignmentNode->variableNameToken = variableNameToken;
-    assignmentNode->assignmentToken = GetTokenThrowExceptionIfWrongType(TokenType::Assignment);
-    assignmentNode->rightSideExpr = ParseExpr(&(assignmentNode->semicolonToken));
-    return assignmentNode;
+    auto assignment = new AssignmentNode();
+    assignment->variableNameToken = variableNameToken;
+    assignment->assignmentToken = GetTokenThrowExceptionIfWrongType(TokenType::Assignment);
+    assignment->rightSideExpr = ParseExpr(&(assignment->semicolonToken));
+    return assignment;
 }
 
-ExprNode * Parser::ParseExpr(Token * semicolonToken)
+ExprNode * Parser::ParseExpr(Token * terminationToken)
 {
     AssocOperationNode* assocOperation;
     ExprNode* currentExprInAssocList;
 
-    bool operatorFound = false;
+    bool plusFound = false;
 
     while (true)
     {
@@ -83,34 +83,54 @@ ExprNode * Parser::ParseExpr(Token * semicolonToken)
         {
         case TokenType::Number:
         {
-            auto numberNode = new NumberNode();
-            numberNode->numberToken = token;
-            currentExprInAssocList = numberNode;
+            auto number = new NumberNode();
+            number->numberToken = token;
+            currentExprInAssocList = number;
             break;
         }
 
         case TokenType::VariableName:
         {
-            auto rightSideVariableNode = new RightSideVariableNode();
-            rightSideVariableNode->variableNameToken = token;
-            currentExprInAssocList = rightSideVariableNode;
+            auto rightSideVariable = new RightSideVariableNode();
+            rightSideVariable->variableNameToken = token;
+            currentExprInAssocList = rightSideVariable;
             break;
         }
 
         case TokenType::Plus:
-            if (!operatorFound)
+            if (!plusFound)
             {
                 assocOperation = new AssocOperationNode();
-                operatorFound = true;
+                plusFound = true;
             }
             assocOperation->operands.push_back(currentExprInAssocList);
             assocOperation->tokensBetweenOperands.push_back(token);
             break;
 
-        case TokenType::Semicolon:
+        case TokenType::UnaryMinus:
         {
-            *semicolonToken = token;
-            if (operatorFound)
+            auto unaryMinus = new UnaryMinusNode();
+            unaryMinus->unaryMinusToken = token;
+            unaryMinus->leftRoundBracketToken = GetTokenThrowExceptionIfWrongType(TokenType::LeftRoundBracket);
+            unaryMinus->innerExpr = ParseExpr(&(unaryMinus->rightRoundBracketToken));
+            currentExprInAssocList = unaryMinus;
+            break;
+        }
+
+        case TokenType::LeftRoundBracket:
+        {
+            auto enclosedExpr = new EnclosedExpr();
+            enclosedExpr->leftRoundBracketToken = token;
+            enclosedExpr->innerExpr = ParseExpr(&(enclosedExpr->rightRoundBracketToken));
+            currentExprInAssocList = enclosedExpr;
+            break;
+        }
+
+        case TokenType::Semicolon:
+        case TokenType::RightRoundBracket:
+        {
+            *terminationToken = token;
+            if (plusFound)
             {
                 assocOperation->operands.push_back(currentExprInAssocList);
                 return assocOperation;
