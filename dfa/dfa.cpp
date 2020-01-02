@@ -24,7 +24,7 @@ void Dfa::AddTransition(int srcState, int targetState, unsigned char c)
 
 void Dfa::AddTransition(int srcState, int targetState, unsigned char intervalStartChar, unsigned char intervalEndChar)
 {
-    for (char c = intervalStartChar; c <= intervalEndChar; c++)
+    for (size_t c = intervalStartChar; c <= intervalEndChar; c++)
     {
         transitions[srcState][c] = targetState;
     }

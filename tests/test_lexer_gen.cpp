@@ -213,6 +213,170 @@ void InvalidOneCharWordNotAccepted()
     assert(!unionDfa.IsInFinalState());
 }
 
+void StringAccepted_TC1()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('"');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('"');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::String);
+}
+
+void StringAccepted_TC2()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('"');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('a');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('"');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::String);
+}
+
+void StringAccepted_TC3()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('"');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('a');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('@');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('"');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::String);
+}
+
+void StringAccepted_TC4()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('"');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('\\');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('"');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('"');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::String);
+}
+
+void StringAccepted_TC5()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('"');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('\\');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('a');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('"');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::String);
+}
+
+void StringAccepted_TC6()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('"');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('\\');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('\\');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('"');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::String);
+}
+
+void StringAccepted_TC7()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('"');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('\\');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('\\');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('\\');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('\\');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('"');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::String);
+}
+
+void StringAccepted_TC8()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('"');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('\\');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('\\');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('\\');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('\\');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('"');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::String);
+}
+
+void StringInvalidNotAccepted_TC1()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('"');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('"');
+    unionDfa.Move('a');
+    if (unionDfa.IsInFinalState())
+    {
+        assert(unionDfa.CurrentFinalStateTokenType() != TokenType::String);
+    }
+}
+
+void StringInvalidNotAccepted_TC2()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('"');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('\\');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('"');
+    assert(!unionDfa.IsInFinalState());
+}
+
+void StringInvalidNotAccepted_TC3()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('"');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('\\');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('\\');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('\\');
+    assert(!unionDfa.IsInFinalState());
+    unionDfa.Move('"');
+    assert(!unionDfa.IsInFinalState());
+}
+
 int main()
 {
     Whitespace_SingleSpaceAccepted();
@@ -235,4 +399,15 @@ int main()
     LeftRoundBracketAccepted();
     RightRoundBracketAccepted();
     InvalidOneCharWordNotAccepted();
+    StringAccepted_TC1();
+    StringAccepted_TC2();
+    StringAccepted_TC3();
+    StringAccepted_TC4();
+    StringAccepted_TC5();
+    StringAccepted_TC6();
+    StringAccepted_TC7();
+    StringAccepted_TC8();
+    StringInvalidNotAccepted_TC1();
+    StringInvalidNotAccepted_TC2();
+    StringInvalidNotAccepted_TC3();
 }

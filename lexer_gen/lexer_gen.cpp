@@ -35,6 +35,16 @@ LexerGen::LexerGen()
     numberDfa.AddTransition(3, 2, '1', '9');
     allTokenDfas.push_back(numberDfa);
 
+    Dfa stringDfa = CreateEmptyDfaForTokenType(4, vector<int>{3}, TokenType::String);
+    stringDfa.AddTransition(0, 1, '"');
+    stringDfa.AddTransition(1, 1, 0, '"' - 1);
+    stringDfa.AddTransition(1, 1, '"' + 1, '\\' - 1);
+    stringDfa.AddTransition(1, 1, '\\' + 1, 255);
+    stringDfa.AddTransition(1, 2, '\\');
+    stringDfa.AddTransition(1, 3, '"');
+    stringDfa.AddTransition(2, 1, 0, 255);
+    allTokenDfas.push_back(stringDfa);
+
     allTokenDfas.push_back(CreateKeywordDfa(";", TokenType::Semicolon));
 
     allTokenDfas.push_back(CreateKeywordDfa("=", TokenType::Assignment));

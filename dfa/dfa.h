@@ -24,13 +24,14 @@ enum TokenType
     Whitespace,
     VariableName,
     Number,
+    String,
     Semicolon,
     Assignment,
     Plus,
     UnaryMinus,
     If,
     LeftRoundBracket,
-    RightRoundBracket,
+    RightRoundBracket
 };
 
 class Dfa
