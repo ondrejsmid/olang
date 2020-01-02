@@ -97,6 +97,14 @@ ExprNode * Parser::ParseExpr(Token * terminationToken)
             break;
         }
 
+        case TokenType::String:
+        {
+            auto stringNode = new StringNode();
+            stringNode->stringToken = token;
+            currentExprInAssocList = stringNode;
+            break;
+        }
+
         case TokenType::Plus:
             if (!plusFound)
             {

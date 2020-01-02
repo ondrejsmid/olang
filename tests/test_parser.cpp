@@ -39,6 +39,15 @@ void AssertTrees(AstNode* expected, AstNode* actual)
         
         assert(expectedCasted->numberToken == actualCasted->numberToken);
     }
+    else if (dynamic_cast<StringNode*>(expected) != NULL)
+    {
+        assert(dynamic_cast<StringNode*>(actual) != NULL);
+
+        StringNode* expectedCasted = (StringNode*)(expected);
+        StringNode* actualCasted = (StringNode*)(actual);
+
+        assert(expectedCasted->stringToken == actualCasted->stringToken);
+    }
     else if (dynamic_cast<RightSideVariableNode*>(expected) != NULL)
     {
         assert(dynamic_cast<RightSideVariableNode*>(actual) != NULL);
@@ -385,6 +394,100 @@ void Parse_AssignmentOfUnaryMinus_TC3()
     delete actualAst;
 }
 
+void Parse_AssignmentOfString_TC1()
+{
+    char* text = "a = \"gh@-\";";
+    // A corresponding Olang code is literally this: a = "gh@-";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto stringNode = new StringNode();
+    stringNode->stringToken = Token(TokenType::String, 4, 9);
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 10, 10);
+    assignment0->rightSideExpr = stringNode;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete expectedAst;
+    delete actualAst;
+}
+
+void Parse_AssignmentOfAssocOperationWithStringAndString()
+{
+    char* text = "a = \"She said \" + \"\\\"Hi!\\\"\";";
+    // A corresponding Olang code is literally this: a = "She said " + "\"Hi!\"";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto stringNode0 = new StringNode();
+    stringNode0->stringToken = Token(TokenType::String, 4, 14);
+
+    auto stringNode1 = new StringNode();
+    stringNode1->stringToken = Token(TokenType::String, 18, 26);
+
+    auto assocOperation = new AssocOperationNode();
+    assocOperation->operands.push_back(stringNode0);
+    assocOperation->operands.push_back(stringNode1);
+    assocOperation->tokensBetweenOperands.push_back(Token(TokenType::Plus, 16, 16));
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 27, 27);
+    assignment0->rightSideExpr = assocOperation;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete expectedAst;
+    delete actualAst;
+}
+
+void Parse_AssignmentOfAssocOperationWithStringAndNumber()
+{
+    char* text = "a = \"I like number \" + 7;";
+    // A corresponding Olang code is literally this: a = "I like number " + 7;
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto stringNode = new StringNode();
+    stringNode->stringToken = Token(TokenType::String, 4, 19);
+
+    auto number = new NumberNode();
+    number->numberToken = Token(TokenType::Number, 23, 23);
+
+    auto assocOperation = new AssocOperationNode();
+    assocOperation->operands.push_back(stringNode);
+    assocOperation->operands.push_back(number);
+    assocOperation->tokensBetweenOperands.push_back(Token(TokenType::Plus, 21, 21));
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 24, 24);
+    assignment0->rightSideExpr = assocOperation;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete expectedAst;
+    delete actualAst;
+}
+
 int main()
 {
     Parse_Program();
@@ -395,4 +498,7 @@ int main()
     Parse_AssignmentOfUnaryMinus_TC1();
     Parse_AssignmentOfUnaryMinus_TC2();
     Parse_AssignmentOfUnaryMinus_TC3();
+    Parse_AssignmentOfString_TC1();
+    Parse_AssignmentOfAssocOperationWithStringAndString();
+    Parse_AssignmentOfAssocOperationWithStringAndNumber();
 }
