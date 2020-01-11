@@ -204,6 +204,24 @@ void RightRoundBracketAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::RightRoundBracket);
 }
 
+void LeftCurlyBracketAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('{');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::LeftCurlyBracket);
+}
+
+void RightCurlyBracketAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('}');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::RightCurlyBracket);
+}
+
 void InvalidOneCharWordNotAccepted()
 {
     LexerGen lexer_gen;
@@ -398,6 +416,8 @@ int main()
     IfAccepted();
     LeftRoundBracketAccepted();
     RightRoundBracketAccepted();
+    LeftCurlyBracketAccepted();
+    RightCurlyBracketAccepted();
     InvalidOneCharWordNotAccepted();
     StringAccepted_TC1();
     StringAccepted_TC2();

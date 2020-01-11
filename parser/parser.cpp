@@ -12,6 +12,19 @@ ProgramNode::~ProgramNode()
     }
 }
 
+AssocOperationNode::~AssocOperationNode()
+{
+    for (auto i = 0; i < operands.size(); i++)
+    {
+        delete operands[i];
+    }
+}
+
+EnclosedExpr::~EnclosedExpr()
+{
+    delete innerExpr;
+}
+
 AssignmentNode::AssignmentNode()
     :
     rightSideExpr(NULL)
@@ -23,10 +36,22 @@ AssignmentNode::~AssignmentNode()
     delete rightSideExpr;
 }
 
+IfNode::~IfNode()
+{
+    delete condition;
+    delete programIfTrue;
+}
+
 Parser::Parser(char *text, size_t textLen)
     :
     lexer(text, textLen)
 {
+}
+
+AstNode* Parser::Parse()
+{
+    Token dummyToken;
+    return ParseProgram(&dummyToken);
 }
 
 Token Parser::GetTokenThrowExceptionIfWrongType(TokenType tokenType)
@@ -39,7 +64,7 @@ Token Parser::GetTokenThrowExceptionIfWrongType(TokenType tokenType)
     return token;
 }
 
-ProgramNode * Parser::Parse()
+ProgramNode *Parser::ParseProgram(Token* terminationToken)
 {
     auto program = new ProgramNode();
     while (true)
@@ -51,9 +76,25 @@ ProgramNode * Parser::Parse()
                 program->statements.push_back(ParseAssignment(token));
                 break;
 
-            case TokenType::Eof:
+            case TokenType::If:
+            {
+                auto ifNode = new IfNode();
+                ifNode->ifToken = token;
+                ifNode->leftRoundBracketToken = GetTokenThrowExceptionIfWrongType(TokenType::LeftRoundBracket);
+                ifNode->condition = ParseExpr(&(ifNode->rightRoundBracketToken));
+                ifNode->leftCurlyBracketToken = GetTokenThrowExceptionIfWrongType(TokenType::LeftCurlyBracket);
+                ifNode->programIfTrue = ParseProgram(&(ifNode->rightCurlyBracketToken));
+                program->statements.push_back(ifNode);
+                break;
+            }
+                
+            case TokenType::RightCurlyBracket:
+                *terminationToken = token;
                 return program;
 
+            case TokenType::Eof:
+                return program;
+            
             default:
                 throw runtime_error("parse error");
         }
@@ -155,3 +196,7 @@ ExprNode * Parser::ParseExpr(Token * terminationToken)
     throw runtime_error("parse error");
 }
 
+IfNode* Parser::ParseIf()
+{
+    return nullptr;
+}

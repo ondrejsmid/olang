@@ -37,6 +37,7 @@ struct AssocOperationNode : ExprNode
 {
     std::vector<ExprNode*> operands;
     std::vector<Token> tokensBetweenOperands;
+    ~AssocOperationNode();
 };
 
 struct EnclosedExpr : ExprNode
@@ -44,6 +45,7 @@ struct EnclosedExpr : ExprNode
     Token leftRoundBracketToken;
     Token rightRoundBracketToken;
     ExprNode* innerExpr;
+    ~EnclosedExpr();
 };
 
 struct UnaryMinusNode : EnclosedExpr
@@ -56,22 +58,37 @@ struct AssignmentNode : AstNode
     Token variableNameToken;
     Token assignmentToken;
     Token semicolonToken;
-    ExprNode * rightSideExpr;
+    ExprNode* rightSideExpr;
     AssignmentNode();
     ~AssignmentNode();
+};
+
+struct IfNode : AstNode
+{
+    Token ifToken;
+    Token leftRoundBracketToken;
+    Token rightRoundBracketToken;
+    Token leftCurlyBracketToken;
+    Token rightCurlyBracketToken;
+    ExprNode* condition;
+    ProgramNode* programIfTrue;
+    ~IfNode();
 };
 
 class Parser
 {
 public:
-    Parser(char *text, size_t textLen);
-    ProgramNode *Parse();
+    Parser(char* text, size_t textLen);
+    AstNode* Parse();
+
 
 private:
     Lexer lexer;
     Token GetTokenThrowExceptionIfWrongType(TokenType tokenType);
-    AssignmentNode * ParseAssignment(const Token & variableNameToken);
-    ExprNode * ParseExpr(Token* semicolonToken);
+    ProgramNode* ParseProgram(Token* terminationToken);
+    AssignmentNode* ParseAssignment(const Token& variableNameToken);
+    ExprNode* ParseExpr(Token* terminationToken);
+    IfNode* ParseIf();
 };
 
 #endif

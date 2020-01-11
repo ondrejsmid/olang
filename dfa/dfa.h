@@ -31,7 +31,9 @@ enum TokenType
     UnaryMinus,
     If,
     LeftRoundBracket,
-    RightRoundBracket
+    RightRoundBracket,
+    LeftCurlyBracket,
+    RightCurlyBracket
 };
 
 class Dfa

@@ -59,6 +59,10 @@ LexerGen::LexerGen()
 
     allTokenDfas.push_back(CreateKeywordDfa(")", TokenType::RightRoundBracket));
 
+    allTokenDfas.push_back(CreateKeywordDfa("{", TokenType::LeftCurlyBracket));
+
+    allTokenDfas.push_back(CreateKeywordDfa("}", TokenType::RightCurlyBracket));
+
     list<Dfa>::iterator tokenDfa = allTokenDfas.begin();
     Dfa unionDfa = *tokenDfa;
     ++tokenDfa;

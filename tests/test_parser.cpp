@@ -99,6 +99,21 @@ void AssertTrees(AstNode* expected, AstNode* actual)
         assert(expectedCasted->unaryMinusToken == actualCasted->unaryMinusToken);
         AssertTrees(expectedCasted->innerExpr, actualCasted->innerExpr);
     }
+    else if (dynamic_cast<IfNode*>(expected) != NULL)
+    {
+        assert(dynamic_cast<IfNode*>(actual) != NULL);
+
+        IfNode* expectedCasted = (IfNode*)(expected);
+        IfNode* actualCasted = (IfNode*)(actual);
+
+        assert(expectedCasted->ifToken == actualCasted->ifToken);
+        assert(expectedCasted->leftRoundBracketToken == actualCasted->leftRoundBracketToken);
+        assert(expectedCasted->rightRoundBracketToken == actualCasted->rightRoundBracketToken);
+        assert(expectedCasted->leftCurlyBracketToken == actualCasted->leftCurlyBracketToken);
+        assert(expectedCasted->rightCurlyBracketToken == actualCasted->rightCurlyBracketToken);
+        AssertTrees(expectedCasted->condition, actualCasted->condition);
+        AssertTrees(expectedCasted->programIfTrue, actualCasted->programIfTrue);
+    }
     else {
         assert(!"Not yet supported AST node types found.");
     }
@@ -488,6 +503,114 @@ void Parse_AssignmentOfAssocOperationWithStringAndNumber()
     delete actualAst;
 }
 
+void Parse_ProgramWithIfStm_TC1()
+{
+    char* text =
+        "if (x) {"
+        "  a = 8;"
+        "}";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto number = new NumberNode();
+    number->numberToken = Token(TokenType::Number, 14, 14);
+
+    auto assignment = new AssignmentNode();
+    assignment->variableNameToken = Token(TokenType::VariableName, 10, 10);
+    assignment->assignmentToken = Token(TokenType::Assignment, 12, 12);
+    assignment->semicolonToken = Token(TokenType::Semicolon, 15, 15);
+    assignment->rightSideExpr = number;
+
+    auto programIfTrue = new ProgramNode();
+    programIfTrue->statements.push_back(assignment);
+
+    auto condition = new RightSideVariableNode();
+    condition->variableNameToken = Token(TokenType::VariableName, 4, 4);
+
+    auto ifNode = new IfNode();
+    ifNode->ifToken = Token(TokenType::If, 0, 1);
+    ifNode->leftRoundBracketToken = Token(TokenType::LeftRoundBracket, 3, 3);
+    ifNode->rightRoundBracketToken = Token(TokenType::RightRoundBracket, 5, 5);
+    ifNode->leftCurlyBracketToken = Token(TokenType::LeftCurlyBracket, 7, 7);
+    ifNode->rightCurlyBracketToken = Token(TokenType::RightCurlyBracket, 16, 16);
+    ifNode->condition = condition;
+    ifNode->programIfTrue = programIfTrue;
+
+    auto program = new ProgramNode();
+    program->statements.push_back(ifNode);
+
+    AssertTrees(program, actualAst);
+
+    delete program;
+    delete actualAst;
+}
+
+void Parse_ProgramWithIfStm_TC2()
+{
+    char* text =
+        "a = 7;"
+        "if (x) {"
+        "  a = 8;"
+        "}"
+        "b = 0;";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto number0 = new NumberNode();
+    number0->numberToken = Token(TokenType::Number, 4, 4);
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 5, 5);
+    assignment0->rightSideExpr = number0;
+
+    auto number1 = new NumberNode();
+    number1->numberToken = Token(TokenType::Number, 20, 20);
+
+    auto assignment1 = new AssignmentNode();
+    assignment1->variableNameToken = Token(TokenType::VariableName, 16, 16);
+    assignment1->assignmentToken = Token(TokenType::Assignment, 18, 18);
+    assignment1->semicolonToken = Token(TokenType::Semicolon, 21, 21);
+    assignment1->rightSideExpr = number1;
+
+    auto programIfTrue = new ProgramNode();
+    programIfTrue->statements.push_back(assignment1);
+
+    auto condition = new RightSideVariableNode();
+    condition->variableNameToken = Token(TokenType::VariableName, 10, 10);
+
+    auto ifNode = new IfNode();
+    ifNode->ifToken = Token(TokenType::If, 6, 7);
+    ifNode->leftRoundBracketToken = Token(TokenType::LeftRoundBracket, 9, 9);
+    ifNode->rightRoundBracketToken = Token(TokenType::RightRoundBracket, 11, 11);
+    ifNode->leftCurlyBracketToken = Token(TokenType::LeftCurlyBracket, 13, 13);
+    ifNode->rightCurlyBracketToken = Token(TokenType::RightCurlyBracket, 22, 22);
+    ifNode->condition = condition;
+    ifNode->programIfTrue = programIfTrue;
+
+    auto number2 = new NumberNode();
+    number2->numberToken = Token(TokenType::Number, 27, 27);
+
+    auto assignment2 = new AssignmentNode();
+    assignment2->variableNameToken = Token(TokenType::VariableName, 23, 23);
+    assignment2->assignmentToken = Token(TokenType::Assignment, 25, 25);
+    assignment2->semicolonToken = Token(TokenType::Semicolon, 28, 28);
+    assignment2->rightSideExpr = number2;
+
+    auto program = new ProgramNode();
+    program->statements.push_back(assignment0);
+    program->statements.push_back(ifNode);
+    program->statements.push_back(assignment2);
+
+    AssertTrees(program, actualAst);
+
+    delete program;
+    delete actualAst;
+}
+
 int main()
 {
     Parse_Program();
@@ -501,4 +624,6 @@ int main()
     Parse_AssignmentOfString_TC1();
     Parse_AssignmentOfAssocOperationWithStringAndString();
     Parse_AssignmentOfAssocOperationWithStringAndNumber();
+    Parse_ProgramWithIfStm_TC1();
+    Parse_ProgramWithIfStm_TC2();
 }
