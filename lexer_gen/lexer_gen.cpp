@@ -55,6 +55,8 @@ LexerGen::LexerGen()
 
     allTokenDfas.push_back(CreateKeywordDfa("if", TokenType::If));
 
+    allTokenDfas.push_back(CreateKeywordDfa("else", TokenType::Else));
+
     allTokenDfas.push_back(CreateKeywordDfa("(", TokenType::LeftRoundBracket));
 
     allTokenDfas.push_back(CreateKeywordDfa(")", TokenType::RightRoundBracket));

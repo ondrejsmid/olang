@@ -30,6 +30,7 @@ enum TokenType
     Plus,
     UnaryMinus,
     If,
+    Else,
     LeftRoundBracket,
     RightRoundBracket,
     LeftCurlyBracket,

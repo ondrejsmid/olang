@@ -28,12 +28,14 @@ class Lexer
     char * text;
     size_t textLen;
     size_t idx;
+    size_t prevIdx;
 
 public:
     Lexer(char *text, size_t textLen);
     bool HasNextToken();
 	Token GetNextToken();
 	Token GetNextNonWhitespaceToken();
+    void MoveBack();
 };
 
 #endif

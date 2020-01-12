@@ -186,6 +186,18 @@ void IfAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::If);
 }
 
+void ElseAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('e');
+    unionDfa.Move('l');
+    unionDfa.Move('s');
+    unionDfa.Move('e');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Else);
+}
+
 void LeftRoundBracketAccepted()
 {
     LexerGen lexer_gen;
@@ -414,6 +426,7 @@ int main()
     PlusAccepted();
     MinusAccepted();
     IfAccepted();
+    ElseAccepted();
     LeftRoundBracketAccepted();
     RightRoundBracketAccepted();
     LeftCurlyBracketAccepted();

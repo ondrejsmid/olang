@@ -63,6 +63,15 @@ struct AssignmentNode : AstNode
     ~AssignmentNode();
 };
 
+struct ElseNode : AstNode
+{
+    Token elseToken;
+    Token leftCurlyBracketToken;
+    Token rightCurlyBracketToken;
+    ProgramNode* program;
+    ~ElseNode();
+};
+
 struct IfNode : AstNode
 {
     Token ifToken;
@@ -72,6 +81,8 @@ struct IfNode : AstNode
     Token rightCurlyBracketToken;
     ExprNode* condition;
     ProgramNode* programIfTrue;
+    ElseNode* elseNode;
+    IfNode();
     ~IfNode();
 };
 
@@ -88,7 +99,7 @@ private:
     ProgramNode* ParseProgram(Token* terminationToken);
     AssignmentNode* ParseAssignment(const Token& variableNameToken);
     ExprNode* ParseExpr(Token* terminationToken);
-    IfNode* ParseIf();
+    IfNode* ParseIf(const Token& ifToken);
 };
 
 #endif

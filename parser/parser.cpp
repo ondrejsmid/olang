@@ -36,10 +36,25 @@ AssignmentNode::~AssignmentNode()
     delete rightSideExpr;
 }
 
+IfNode::IfNode()
+    :
+    elseNode(NULL)
+{
+}
+
 IfNode::~IfNode()
 {
     delete condition;
     delete programIfTrue;
+    if (elseNode != NULL)
+    {
+        delete elseNode;
+    }
+}
+
+ElseNode::~ElseNode()
+{
+    delete program;
 }
 
 Parser::Parser(char *text, size_t textLen)
@@ -78,12 +93,7 @@ ProgramNode *Parser::ParseProgram(Token* terminationToken)
 
             case TokenType::If:
             {
-                auto ifNode = new IfNode();
-                ifNode->ifToken = token;
-                ifNode->leftRoundBracketToken = GetTokenThrowExceptionIfWrongType(TokenType::LeftRoundBracket);
-                ifNode->condition = ParseExpr(&(ifNode->rightRoundBracketToken));
-                ifNode->leftCurlyBracketToken = GetTokenThrowExceptionIfWrongType(TokenType::LeftCurlyBracket);
-                ifNode->programIfTrue = ParseProgram(&(ifNode->rightCurlyBracketToken));
+                auto ifNode = ParseIf(token);
                 program->statements.push_back(ifNode);
                 break;
             }
@@ -196,7 +206,26 @@ ExprNode * Parser::ParseExpr(Token * terminationToken)
     throw runtime_error("parse error");
 }
 
-IfNode* Parser::ParseIf()
+IfNode* Parser::ParseIf(const Token& ifToken)
 {
-    return nullptr;
+    auto ifNode = new IfNode();
+    ifNode->ifToken = ifToken;
+    ifNode->leftRoundBracketToken = GetTokenThrowExceptionIfWrongType(TokenType::LeftRoundBracket);
+    ifNode->condition = ParseExpr(&(ifNode->rightRoundBracketToken));
+    ifNode->leftCurlyBracketToken = GetTokenThrowExceptionIfWrongType(TokenType::LeftCurlyBracket);
+    ifNode->programIfTrue = ParseProgram(&(ifNode->rightCurlyBracketToken));
+
+    auto token = lexer.GetNextNonWhitespaceToken();
+    if (token.tokenType == TokenType::Else)
+    {
+        ifNode->elseNode = new ElseNode();
+        ifNode->elseNode->elseToken = token;
+        ifNode->elseNode->leftCurlyBracketToken = GetTokenThrowExceptionIfWrongType(TokenType::LeftCurlyBracket);
+        ifNode->elseNode->program = ParseProgram(&(ifNode->elseNode->rightCurlyBracketToken));
+    }
+    else {
+        lexer.MoveBack();
+    }
+
+    return ifNode;
 }

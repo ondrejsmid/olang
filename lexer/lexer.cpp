@@ -1,3 +1,4 @@
+#include "lexer.h"
 #include <cassert>
 #include "lexer.h"
 
@@ -24,6 +25,8 @@ Token Lexer::GetNextToken()
         token.tokenType = TokenType::Eof;
         return token;
     }
+
+    prevIdx = idx;
 
     unionDfa.Reset();
     size_t tokenStartIdx = idx;
@@ -59,4 +62,9 @@ Token Lexer::GetNextNonWhitespaceToken()
     else {
         return token;
     }
+}
+
+void Lexer::MoveBack()
+{
+    idx = prevIdx;
 }
