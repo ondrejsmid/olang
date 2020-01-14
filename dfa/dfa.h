@@ -25,6 +25,8 @@ enum TokenType
     VariableName,
     Number,
     String,
+    True,
+    False,
     Semicolon,
     Assignment,
     Plus,
@@ -34,7 +36,16 @@ enum TokenType
     LeftRoundBracket,
     RightRoundBracket,
     LeftCurlyBracket,
-    RightCurlyBracket
+    RightCurlyBracket,
+    Equal,
+    Negate,
+    NotEqual,
+    Greater,
+    GreaterOrEqual,
+    Less,
+    LessOrEqual,
+    And,
+    Or
 };
 
 class Dfa

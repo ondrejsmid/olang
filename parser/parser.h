@@ -28,6 +28,16 @@ struct StringNode : ExprNode
     Token stringToken;
 };
 
+struct TrueNode : ExprNode
+{
+    Token trueToken;
+};
+
+struct FalseNode : ExprNode
+{
+    Token falseToken;
+};
+
 struct RightSideVariableNode : ExprNode
 {
     Token variableNameToken;
@@ -51,6 +61,11 @@ struct EnclosedExpr : ExprNode
 struct UnaryMinusNode : EnclosedExpr
 {
     Token unaryMinusToken;
+};
+
+struct NegateNode : EnclosedExpr
+{
+    Token negateToken;
 };
 
 struct AssignmentNode : AstNode
@@ -91,7 +106,6 @@ class Parser
 public:
     Parser(char* text, size_t textLen);
     AstNode* Parse();
-
 
 private:
     Lexer lexer;

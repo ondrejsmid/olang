@@ -125,7 +125,8 @@ ExprNode * Parser::ParseExpr(Token * terminationToken)
     AssocOperationNode* assocOperation;
     ExprNode* currentExprInAssocList;
 
-    bool plusFound = false;
+    bool isOperatorFound = false;
+    TokenType foundOperator;
 
     while (true)
     {
@@ -156,11 +157,37 @@ ExprNode * Parser::ParseExpr(Token * terminationToken)
             break;
         }
 
+        case TokenType::True:
+            {
+            auto trueNode = new TrueNode();
+            trueNode->trueToken = token;
+            currentExprInAssocList = trueNode;
+            break;
+        }
+
+        case TokenType::False:
+        {
+            auto falseNode = new FalseNode();
+            falseNode->falseToken = token;
+            currentExprInAssocList = falseNode;
+            break;
+        }
+
         case TokenType::Plus:
-            if (!plusFound)
+        case TokenType::And:
+        case TokenType::Or:
+            if (isOperatorFound)
+            {
+                if (token.tokenType != foundOperator)
+                {
+                    throw runtime_error("parse error");
+                }
+            }
+            else
             {
                 assocOperation = new AssocOperationNode();
-                plusFound = true;
+                isOperatorFound = true;
+                foundOperator = token.tokenType;
             }
             assocOperation->operands.push_back(currentExprInAssocList);
             assocOperation->tokensBetweenOperands.push_back(token);
@@ -173,6 +200,16 @@ ExprNode * Parser::ParseExpr(Token * terminationToken)
             unaryMinus->leftRoundBracketToken = GetTokenThrowExceptionIfWrongType(TokenType::LeftRoundBracket);
             unaryMinus->innerExpr = ParseExpr(&(unaryMinus->rightRoundBracketToken));
             currentExprInAssocList = unaryMinus;
+            break;
+        }
+
+        case TokenType::Negate:
+        {
+            auto negate = new NegateNode();
+            negate->negateToken = token;
+            negate->leftRoundBracketToken = GetTokenThrowExceptionIfWrongType(TokenType::LeftRoundBracket);
+            negate->innerExpr = ParseExpr(&(negate->rightRoundBracketToken));
+            currentExprInAssocList = negate;
             break;
         }
 
@@ -189,7 +226,7 @@ ExprNode * Parser::ParseExpr(Token * terminationToken)
         case TokenType::RightRoundBracket:
         {
             *terminationToken = token;
-            if (plusFound)
+            if (isOperatorFound)
             {
                 assocOperation->operands.push_back(currentExprInAssocList);
                 return assocOperation;

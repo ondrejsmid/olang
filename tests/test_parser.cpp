@@ -48,6 +48,24 @@ void AssertTrees(AstNode* expected, AstNode* actual)
 
         assert(expectedCasted->stringToken == actualCasted->stringToken);
     }
+    else if (dynamic_cast<TrueNode*>(expected) != NULL)
+    {
+        assert(dynamic_cast<TrueNode*>(actual) != NULL);
+
+        TrueNode* expectedCasted = (TrueNode*)(expected);
+        TrueNode* actualCasted = (TrueNode*)(actual);
+
+        assert(expectedCasted->trueToken == actualCasted->trueToken);
+    }
+    else if (dynamic_cast<FalseNode*>(expected) != NULL)
+    {
+        assert(dynamic_cast<FalseNode*>(actual) != NULL);
+
+        FalseNode* expectedCasted = (FalseNode*)(expected);
+        FalseNode* actualCasted = (FalseNode*)(actual);
+
+        assert(expectedCasted->falseToken == actualCasted->falseToken);
+    }
     else if (dynamic_cast<RightSideVariableNode*>(expected) != NULL)
     {
         assert(dynamic_cast<RightSideVariableNode*>(actual) != NULL);
@@ -86,19 +104,27 @@ void AssertTrees(AstNode* expected, AstNode* actual)
         assert(expectedCasted->leftRoundBracketToken == actualCasted->leftRoundBracketToken);
         assert(expectedCasted->rightRoundBracketToken == actualCasted->rightRoundBracketToken);
         AssertTrees(expectedCasted->innerExpr, actualCasted->innerExpr);
-    }
-    else if (dynamic_cast<UnaryMinusNode*>(expected) != NULL)
-    {
-        assert(dynamic_cast<UnaryMinusNode*>(actual) != NULL);
 
-        UnaryMinusNode* expectedCasted = (UnaryMinusNode*)(expected);
-        UnaryMinusNode* actualCasted = (UnaryMinusNode*)(actual);
+        if (dynamic_cast<UnaryMinusNode*>(expected) != NULL)
+        {
+            assert(dynamic_cast<UnaryMinusNode*>(actual) != NULL);
 
-        assert(expectedCasted->leftRoundBracketToken == actualCasted->leftRoundBracketToken);
-        assert(expectedCasted->rightRoundBracketToken == actualCasted->rightRoundBracketToken);
-        assert(expectedCasted->unaryMinusToken == actualCasted->unaryMinusToken);
-        AssertTrees(expectedCasted->innerExpr, actualCasted->innerExpr);
+            UnaryMinusNode* expectedCasted = (UnaryMinusNode*)(expected);
+            UnaryMinusNode* actualCasted = (UnaryMinusNode*)(actual);
+            
+            assert(expectedCasted->unaryMinusToken == actualCasted->unaryMinusToken);
+        }
+        if (dynamic_cast<NegateNode*>(expected) != NULL)
+        {
+            assert(dynamic_cast<NegateNode*>(actual) != NULL);
+
+            NegateNode* expectedCasted = (NegateNode*)(expected);
+            NegateNode* actualCasted = (NegateNode*)(actual);
+
+            assert(expectedCasted->negateToken == actualCasted->negateToken);
+        }
     }
+    
     else if (dynamic_cast<IfNode*>(expected) != NULL)
     {
         assert(dynamic_cast<IfNode*>(actual) != NULL);
@@ -695,6 +721,150 @@ void Parse_ProgramWithIfStmWithElse_TC1()
     delete actualAst;
 }
 
+void Parse_LogicalAnd()
+{
+    char* text = "a = b && c;";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto rightSideVariable0 = new RightSideVariableNode();
+    rightSideVariable0->variableNameToken = Token(TokenType::VariableName, 4, 4);
+
+    auto rightSideVariable1 = new RightSideVariableNode();
+    rightSideVariable1->variableNameToken = Token(TokenType::VariableName, 9, 9);
+
+    auto assocOperation = new AssocOperationNode();
+    assocOperation->operands.push_back(rightSideVariable0);
+    assocOperation->operands.push_back(rightSideVariable1);
+    assocOperation->tokensBetweenOperands.push_back(Token(TokenType::And, 6, 7));
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 10, 10);
+    assignment0->rightSideExpr = assocOperation;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete actualAst;
+}
+
+void Parse_LogicalOr()
+{
+    char* text = "a = b || c;";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto rightSideVariable0 = new RightSideVariableNode();
+    rightSideVariable0->variableNameToken = Token(TokenType::VariableName, 4, 4);
+
+    auto rightSideVariable1 = new RightSideVariableNode();
+    rightSideVariable1->variableNameToken = Token(TokenType::VariableName, 9, 9);
+
+    auto assocOperation = new AssocOperationNode();
+    assocOperation->operands.push_back(rightSideVariable0);
+    assocOperation->operands.push_back(rightSideVariable1);
+    assocOperation->tokensBetweenOperands.push_back(Token(TokenType::Or, 6, 7));
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 10, 10);
+    assignment0->rightSideExpr = assocOperation;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete actualAst;
+}
+
+void Parse_True()
+{
+    char* text = "a = true;";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto trueNode = new TrueNode();
+    trueNode->trueToken = Token(TokenType::True, 4, 7);
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 8, 8);
+    assignment0->rightSideExpr = trueNode;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete expectedAst;
+    delete actualAst;
+}
+
+void Parse_False()
+{
+    char* text = "a = false;";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto falseNode = new FalseNode();
+    falseNode->falseToken = Token(TokenType::False, 4, 8);
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 9, 9);
+    assignment0->rightSideExpr = falseNode;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete expectedAst;
+    delete actualAst;
+}
+
+void Parse_Negate()
+{
+    char* text = "a = !(b);";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto rightSideVariable = new RightSideVariableNode();
+    rightSideVariable->variableNameToken = Token(TokenType::VariableName, 6, 6);
+
+    auto negate = new NegateNode();
+    negate->negateToken = Token(TokenType::Negate, 4, 4);
+    negate->leftRoundBracketToken = Token(TokenType::LeftRoundBracket, 5, 5);
+    negate->rightRoundBracketToken = Token(TokenType::RightRoundBracket, 7, 7);
+    negate->innerExpr = rightSideVariable;
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 8, 8);
+    assignment0->rightSideExpr = negate;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete actualAst;
+}
+
 int main()
 {
     Parse_Program();
@@ -711,4 +881,9 @@ int main()
     Parse_ProgramWithIfStm_TC1();
     Parse_ProgramWithIfStm_TC2();
     Parse_ProgramWithIfStmWithElse_TC1();
+    Parse_LogicalAnd();
+    Parse_LogicalOr();
+    Parse_True();
+    Parse_False();
+    Parse_Negate();
 }

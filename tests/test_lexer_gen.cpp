@@ -234,6 +234,31 @@ void RightCurlyBracketAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::RightCurlyBracket);
 }
 
+void TrueAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('t');
+    unionDfa.Move('r');
+    unionDfa.Move('u');
+    unionDfa.Move('e');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::True);
+}
+
+void FalseAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('f');
+    unionDfa.Move('a');
+    unionDfa.Move('l');
+    unionDfa.Move('s');
+    unionDfa.Move('e');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::False);
+}
+
 void InvalidOneCharWordNotAccepted()
 {
     LexerGen lexer_gen;
@@ -407,6 +432,93 @@ void StringInvalidNotAccepted_TC3()
     assert(!unionDfa.IsInFinalState());
 }
 
+void EqualAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('=');
+    unionDfa.Move('=');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Equal);
+}
+
+void NegateAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('!');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Negate);
+}
+
+void NotEqualAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('!');
+    unionDfa.Move('=');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::NotEqual);
+}
+
+void GreaterAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('>');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Greater);
+}
+
+void GreaterOrEqualAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('>');
+    unionDfa.Move('=');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::GreaterOrEqual);
+}
+
+void LessAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('<');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Less);
+}
+
+void LessOrEqualAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('<');
+    unionDfa.Move('=');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::LessOrEqual);
+}
+
+void AndAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('&');
+    unionDfa.Move('&');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::And);
+}
+
+void OrAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('|');
+    unionDfa.Move('|');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Or);
+}
+
 int main()
 {
     Whitespace_SingleSpaceAccepted();
@@ -443,4 +555,15 @@ int main()
     StringInvalidNotAccepted_TC1();
     StringInvalidNotAccepted_TC2();
     StringInvalidNotAccepted_TC3();
+    TrueAccepted();
+    FalseAccepted();
+    EqualAccepted();
+    NegateAccepted();
+    NotEqualAccepted();
+    GreaterAccepted();
+    GreaterOrEqualAccepted();
+    LessAccepted();
+    LessOrEqualAccepted();
+    AndAccepted();
+    OrAccepted();
 }

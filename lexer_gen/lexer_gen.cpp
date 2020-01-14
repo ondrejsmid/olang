@@ -46,24 +46,26 @@ LexerGen::LexerGen()
     allTokenDfas.push_back(stringDfa);
 
     allTokenDfas.push_back(CreateKeywordDfa(";", TokenType::Semicolon));
-
     allTokenDfas.push_back(CreateKeywordDfa("=", TokenType::Assignment));
-
     allTokenDfas.push_back(CreateKeywordDfa("+", TokenType::Plus));
-
     allTokenDfas.push_back(CreateKeywordDfa("-", TokenType::UnaryMinus));
-
     allTokenDfas.push_back(CreateKeywordDfa("if", TokenType::If));
-
     allTokenDfas.push_back(CreateKeywordDfa("else", TokenType::Else));
-
     allTokenDfas.push_back(CreateKeywordDfa("(", TokenType::LeftRoundBracket));
-
     allTokenDfas.push_back(CreateKeywordDfa(")", TokenType::RightRoundBracket));
-
     allTokenDfas.push_back(CreateKeywordDfa("{", TokenType::LeftCurlyBracket));
-
     allTokenDfas.push_back(CreateKeywordDfa("}", TokenType::RightCurlyBracket));
+    allTokenDfas.push_back(CreateKeywordDfa("true", TokenType::True));
+    allTokenDfas.push_back(CreateKeywordDfa("false", TokenType::False));
+    allTokenDfas.push_back(CreateKeywordDfa("==", TokenType::Equal));
+    allTokenDfas.push_back(CreateKeywordDfa("!", TokenType::Negate));
+    allTokenDfas.push_back(CreateKeywordDfa("!=", TokenType::NotEqual));
+    allTokenDfas.push_back(CreateKeywordDfa(">", TokenType::Greater));
+    allTokenDfas.push_back(CreateKeywordDfa(">=", TokenType::GreaterOrEqual));
+    allTokenDfas.push_back(CreateKeywordDfa("<", TokenType::Less));
+    allTokenDfas.push_back(CreateKeywordDfa("<=", TokenType::LessOrEqual));
+    allTokenDfas.push_back(CreateKeywordDfa("&&", TokenType::And));
+    allTokenDfas.push_back(CreateKeywordDfa("||", TokenType::Or));
 
     list<Dfa>::iterator tokenDfa = allTokenDfas.begin();
     Dfa unionDfa = *tokenDfa;
