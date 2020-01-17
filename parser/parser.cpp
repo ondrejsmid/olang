@@ -120,24 +120,21 @@ AssignmentNode * Parser::ParseAssignment(const Token & variableNameToken)
     return assignment;
 }
 
-ExprNode * Parser::ParseExpr(Token * terminationToken)
+ExprNode * Parser::ParseExpr(Token* terminationToken)
 {
-    AssocOperationNode* assocOperation;
-    ExprNode* currentExprInAssocList;
-
-    bool isOperatorFound = false;
-    TokenType foundOperator;
+    AssocOperationNode* assocOperation = new AssocOperationNode();
 
     while (true)
     {
         auto token = lexer.GetNextNonWhitespaceToken();
+        bool isTokenOperator = false;
         switch (token.tokenType)
         {
         case TokenType::Number:
         {
             auto number = new NumberNode();
             number->numberToken = token;
-            currentExprInAssocList = number;
+            assocOperation->operands.push_back(number);
             break;
         }
 
@@ -145,7 +142,7 @@ ExprNode * Parser::ParseExpr(Token * terminationToken)
         {
             auto rightSideVariable = new RightSideVariableNode();
             rightSideVariable->variableNameToken = token;
-            currentExprInAssocList = rightSideVariable;
+            assocOperation->operands.push_back(rightSideVariable);
             break;
         }
 
@@ -153,7 +150,7 @@ ExprNode * Parser::ParseExpr(Token * terminationToken)
         {
             auto stringNode = new StringNode();
             stringNode->stringToken = token;
-            currentExprInAssocList = stringNode;
+            assocOperation->operands.push_back(stringNode);
             break;
         }
 
@@ -161,7 +158,7 @@ ExprNode * Parser::ParseExpr(Token * terminationToken)
             {
             auto trueNode = new TrueNode();
             trueNode->trueToken = token;
-            currentExprInAssocList = trueNode;
+            assocOperation->operands.push_back(trueNode);
             break;
         }
 
@@ -169,28 +166,33 @@ ExprNode * Parser::ParseExpr(Token * terminationToken)
         {
             auto falseNode = new FalseNode();
             falseNode->falseToken = token;
-            currentExprInAssocList = falseNode;
+            assocOperation->operands.push_back(falseNode);
             break;
         }
 
+        /* binary operators (i.e. exactly 1 operator token) */
+        case TokenType::Equal:
+        case TokenType::NotEqual:
+        case TokenType::Greater:
+        case TokenType::GreaterOrEqual:
+        case TokenType::Less:
+        case TokenType::LessOrEqual:
+            if (assocOperation->operatorTokens.size() == 1)
+            {
+                throw runtime_error("Parse error: a binary assoc list must not have more than 1 operator token.");
+            }
+            isTokenOperator = true;
+            break;
+
+        /* n-ary operators, where n >= 3 (i.e. operator tokens cnt >= 2) */
         case TokenType::Plus:
         case TokenType::And:
         case TokenType::Or:
-            if (isOperatorFound)
+            if (assocOperation->operatorTokens.size() >= 1 && token.tokenType != assocOperation->operatorTokens.front().tokenType)
             {
-                if (token.tokenType != foundOperator)
-                {
-                    throw runtime_error("parse error");
-                }
+                throw runtime_error("Parse error: different operators must not be present in the same assoc list.");
             }
-            else
-            {
-                assocOperation = new AssocOperationNode();
-                isOperatorFound = true;
-                foundOperator = token.tokenType;
-            }
-            assocOperation->operands.push_back(currentExprInAssocList);
-            assocOperation->tokensBetweenOperands.push_back(token);
+            isTokenOperator = true;
             break;
 
         case TokenType::UnaryMinus:
@@ -199,7 +201,7 @@ ExprNode * Parser::ParseExpr(Token * terminationToken)
             unaryMinus->unaryMinusToken = token;
             unaryMinus->leftRoundBracketToken = GetTokenThrowExceptionIfWrongType(TokenType::LeftRoundBracket);
             unaryMinus->innerExpr = ParseExpr(&(unaryMinus->rightRoundBracketToken));
-            currentExprInAssocList = unaryMinus;
+            assocOperation->operands.push_back(unaryMinus);
             break;
         }
 
@@ -209,7 +211,7 @@ ExprNode * Parser::ParseExpr(Token * terminationToken)
             negate->negateToken = token;
             negate->leftRoundBracketToken = GetTokenThrowExceptionIfWrongType(TokenType::LeftRoundBracket);
             negate->innerExpr = ParseExpr(&(negate->rightRoundBracketToken));
-            currentExprInAssocList = negate;
+            assocOperation->operands.push_back(negate);
             break;
         }
 
@@ -218,26 +220,31 @@ ExprNode * Parser::ParseExpr(Token * terminationToken)
             auto enclosedExpr = new EnclosedExpr();
             enclosedExpr->leftRoundBracketToken = token;
             enclosedExpr->innerExpr = ParseExpr(&(enclosedExpr->rightRoundBracketToken));
-            currentExprInAssocList = enclosedExpr;
+            assocOperation->operands.push_back(enclosedExpr);
             break;
         }
 
+        /* termination */
         case TokenType::Semicolon:
         case TokenType::RightRoundBracket:
         {
             *terminationToken = token;
-            if (isOperatorFound)
+            if (assocOperation->operands.size() > 1)
             {
-                assocOperation->operands.push_back(currentExprInAssocList);
                 return assocOperation;
             }
             else {
-                return currentExprInAssocList;
+                return assocOperation->operands[0];
             }
         }
 
         default:
             throw runtime_error("parse error");
+        }
+
+        if (isTokenOperator)
+        {
+            assocOperation->operatorTokens.push_back(token);
         }
     }
     throw runtime_error("parse error");

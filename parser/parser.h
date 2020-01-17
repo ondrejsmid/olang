@@ -46,7 +46,7 @@ struct RightSideVariableNode : ExprNode
 struct AssocOperationNode : ExprNode
 {
     std::vector<ExprNode*> operands;
-    std::vector<Token> tokensBetweenOperands;
+    std::vector<Token> operatorTokens;
     ~AssocOperationNode();
 };
 

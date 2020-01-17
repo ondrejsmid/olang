@@ -82,7 +82,7 @@ void AssertTrees(AstNode* expected, AstNode* actual)
         AssocOperationNode* expectedCasted = (AssocOperationNode*)(expected);
         AssocOperationNode* actualCasted = (AssocOperationNode*)(actual);
 
-        assert(std::equal(expectedCasted->tokensBetweenOperands.begin(), expectedCasted->tokensBetweenOperands.end(), actualCasted->tokensBetweenOperands.begin()));
+        assert(std::equal(expectedCasted->operatorTokens.begin(), expectedCasted->operatorTokens.end(), actualCasted->operatorTokens.begin()));
 
         assert(expectedCasted->operands.size() == actualCasted->operands.size());
         auto expectedOperand = expectedCasted->operands.begin();
@@ -253,7 +253,7 @@ void Parse_AssignmentOfAssocOperation_Addition_TC1()
     auto assocOperation = new AssocOperationNode();
     assocOperation->operands.push_back(rightSideVariable);
     assocOperation->operands.push_back(number);
-    assocOperation->tokensBetweenOperands.push_back(Token(TokenType::Plus, 6, 6));
+    assocOperation->operatorTokens.push_back(Token(TokenType::Plus, 6, 6));
 
     auto assignment0 = new AssignmentNode();
     assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
@@ -289,8 +289,8 @@ void Parse_AssignmentOfAssocOperation_Addition_TC2()
     assocOperation->operands.push_back(rightSideVariable0);
     assocOperation->operands.push_back(number);
     assocOperation->operands.push_back(rightSideVariable1);
-    assocOperation->tokensBetweenOperands.push_back(Token(TokenType::Plus, 6, 6));
-    assocOperation->tokensBetweenOperands.push_back(Token(TokenType::Plus, 10, 10));
+    assocOperation->operatorTokens.push_back(Token(TokenType::Plus, 6, 6));
+    assocOperation->operatorTokens.push_back(Token(TokenType::Plus, 10, 10));
 
     auto assignment0 = new AssignmentNode();
     assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
@@ -381,7 +381,7 @@ void Parse_AssignmentOfUnaryMinus_TC2()
     auto assocOperation = new AssocOperationNode();
     assocOperation->operands.push_back(rightSideVariable);
     assocOperation->operands.push_back(number);
-    assocOperation->tokensBetweenOperands.push_back(Token(TokenType::Plus, 8, 8));
+    assocOperation->operatorTokens.push_back(Token(TokenType::Plus, 8, 8));
 
     auto unaryMinus = new UnaryMinusNode();
     unaryMinus->unaryMinusToken = Token(TokenType::UnaryMinus, 4, 4);
@@ -419,7 +419,7 @@ void Parse_AssignmentOfUnaryMinus_TC3()
     auto assocOperation0 = new AssocOperationNode();
     assocOperation0->operands.push_back(rightSideVariable0);
     assocOperation0->operands.push_back(number);
-    assocOperation0->tokensBetweenOperands.push_back(Token(TokenType::Plus, 8, 8));
+    assocOperation0->operatorTokens.push_back(Token(TokenType::Plus, 8, 8));
 
     auto unaryMinus = new UnaryMinusNode();
     unaryMinus->unaryMinusToken = Token(TokenType::UnaryMinus, 4, 4);
@@ -437,8 +437,8 @@ void Parse_AssignmentOfUnaryMinus_TC3()
     assocOperation1->operands.push_back(unaryMinus);
     assocOperation1->operands.push_back(rightSideVariable1);
     assocOperation1->operands.push_back(rightSideVariable2);
-    assocOperation1->tokensBetweenOperands.push_back(Token(TokenType::Plus, 13, 13));
-    assocOperation1->tokensBetweenOperands.push_back(Token(TokenType::Plus, 17, 17));
+    assocOperation1->operatorTokens.push_back(Token(TokenType::Plus, 13, 13));
+    assocOperation1->operatorTokens.push_back(Token(TokenType::Plus, 17, 17));
 
     auto assignment0 = new AssignmentNode();
     assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
@@ -497,7 +497,7 @@ void Parse_AssignmentOfAssocOperationWithStringAndString()
     auto assocOperation = new AssocOperationNode();
     assocOperation->operands.push_back(stringNode0);
     assocOperation->operands.push_back(stringNode1);
-    assocOperation->tokensBetweenOperands.push_back(Token(TokenType::Plus, 16, 16));
+    assocOperation->operatorTokens.push_back(Token(TokenType::Plus, 16, 16));
 
     auto assignment0 = new AssignmentNode();
     assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
@@ -531,7 +531,7 @@ void Parse_AssignmentOfAssocOperationWithStringAndNumber()
     auto assocOperation = new AssocOperationNode();
     assocOperation->operands.push_back(stringNode);
     assocOperation->operands.push_back(number);
-    assocOperation->tokensBetweenOperands.push_back(Token(TokenType::Plus, 21, 21));
+    assocOperation->operatorTokens.push_back(Token(TokenType::Plus, 21, 21));
 
     auto assignment0 = new AssignmentNode();
     assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
@@ -737,7 +737,7 @@ void Parse_LogicalAnd()
     auto assocOperation = new AssocOperationNode();
     assocOperation->operands.push_back(rightSideVariable0);
     assocOperation->operands.push_back(rightSideVariable1);
-    assocOperation->tokensBetweenOperands.push_back(Token(TokenType::And, 6, 7));
+    assocOperation->operatorTokens.push_back(Token(TokenType::And, 6, 7));
 
     auto assignment0 = new AssignmentNode();
     assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
@@ -769,7 +769,7 @@ void Parse_LogicalOr()
     auto assocOperation = new AssocOperationNode();
     assocOperation->operands.push_back(rightSideVariable0);
     assocOperation->operands.push_back(rightSideVariable1);
-    assocOperation->tokensBetweenOperands.push_back(Token(TokenType::Or, 6, 7));
+    assocOperation->operatorTokens.push_back(Token(TokenType::Or, 6, 7));
 
     auto assignment0 = new AssignmentNode();
     assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
@@ -865,6 +865,38 @@ void Parse_Negate()
     delete actualAst;
 }
 
+void Parse_AssignmentOfEquality()
+{
+    char* text = "a = b == 2;";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto rightSideVariable = new RightSideVariableNode();
+    rightSideVariable->variableNameToken = Token(TokenType::VariableName, 4, 4);
+
+    auto number = new NumberNode();
+    number->numberToken = Token(TokenType::Number, 9, 9);
+
+    auto equality = new AssocOperationNode();
+    equality->operands.push_back(rightSideVariable);
+    equality->operands.push_back(number);
+    equality->operatorTokens.push_back(Token(TokenType::Equal, 6, 7));
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 10, 10);
+    assignment0->rightSideExpr = equality;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete actualAst;
+}
+
 int main()
 {
     Parse_Program();
@@ -886,4 +918,5 @@ int main()
     Parse_True();
     Parse_False();
     Parse_Negate();
+    Parse_AssignmentOfEquality();
 }
