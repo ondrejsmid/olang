@@ -30,6 +30,8 @@ enum TokenType
     Semicolon,
     Assignment,
     Plus,
+    Multiply,
+    MultiplicationInversion,
     UnaryMinus,
     If,
     Else,

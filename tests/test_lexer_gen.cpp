@@ -519,6 +519,24 @@ void OrAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Or);
 }
 
+void MultiplyAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('*');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Multiply);
+}
+
+void MultiplicationInversionAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('/');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::MultiplicationInversion);
+}
+
 int main()
 {
     Whitespace_SingleSpaceAccepted();
@@ -566,4 +584,6 @@ int main()
     LessOrEqualAccepted();
     AndAccepted();
     OrAccepted();
+    MultiplyAccepted();
+    MultiplicationInversionAccepted();
 }

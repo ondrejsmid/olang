@@ -186,6 +186,7 @@ ExprNode * Parser::ParseExpr(Token* terminationToken)
 
         /* n-ary operators, where n >= 3 (i.e. operator tokens cnt >= 2) */
         case TokenType::Plus:
+        case TokenType::Multiply:
         case TokenType::And:
         case TokenType::Or:
             if (assocOperation->operatorTokens.size() >= 1 && token.tokenType != assocOperation->operatorTokens.front().tokenType)
@@ -202,6 +203,16 @@ ExprNode * Parser::ParseExpr(Token* terminationToken)
             unaryMinus->leftRoundBracketToken = GetTokenThrowExceptionIfWrongType(TokenType::LeftRoundBracket);
             unaryMinus->innerExpr = ParseExpr(&(unaryMinus->rightRoundBracketToken));
             assocOperation->operands.push_back(unaryMinus);
+            break;
+        }
+
+        case TokenType::MultiplicationInversion:
+        {
+            auto multiplicationInversion = new MultiplicationInversionNode();
+            multiplicationInversion->multiplicationInversionToken = token;
+            multiplicationInversion->leftRoundBracketToken = GetTokenThrowExceptionIfWrongType(TokenType::LeftRoundBracket);
+            multiplicationInversion->innerExpr = ParseExpr(&(multiplicationInversion->rightRoundBracketToken));
+            assocOperation->operands.push_back(multiplicationInversion);
             break;
         }
 

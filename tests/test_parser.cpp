@@ -114,6 +114,15 @@ void AssertTrees(AstNode* expected, AstNode* actual)
             
             assert(expectedCasted->unaryMinusToken == actualCasted->unaryMinusToken);
         }
+        if (dynamic_cast<MultiplicationInversionNode*>(expected) != NULL)
+        {
+            assert(dynamic_cast<MultiplicationInversionNode*>(actual) != NULL);
+
+            MultiplicationInversionNode* expectedCasted = (MultiplicationInversionNode*)(expected);
+            MultiplicationInversionNode* actualCasted = (MultiplicationInversionNode*)(actual);
+
+            assert(expectedCasted->multiplicationInversionToken == actualCasted->multiplicationInversionToken);
+        }
         if (dynamic_cast<NegateNode*>(expected) != NULL)
         {
             assert(dynamic_cast<NegateNode*>(actual) != NULL);
@@ -865,7 +874,7 @@ void Parse_Negate()
     delete actualAst;
 }
 
-void Parse_AssignmentOfEquality()
+void Parse_Equality()
 {
     char* text = "a = b == 2;";
 
@@ -897,6 +906,109 @@ void Parse_AssignmentOfEquality()
     delete actualAst;
 }
 
+void Parse_Multiply()
+{
+    char* text = "a = b * 2;";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto rightSideVariable = new RightSideVariableNode();
+    rightSideVariable->variableNameToken = Token(TokenType::VariableName, 4, 4);
+
+    auto number = new NumberNode();
+    number->numberToken = Token(TokenType::Number, 8, 8);
+
+    auto assocOperation = new AssocOperationNode();
+    assocOperation->operands.push_back(rightSideVariable);
+    assocOperation->operands.push_back(number);
+    assocOperation->operatorTokens.push_back(Token(TokenType::Multiply, 6, 6));
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 9, 9);
+    assignment0->rightSideExpr = assocOperation;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete actualAst;
+}
+
+void Parse_MultiplicationInversion()
+{
+    char* text = "a = /(2);";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto rightSideVariable = new RightSideVariableNode();
+    rightSideVariable->variableNameToken = Token(TokenType::VariableName, 4, 4);
+
+    auto number = new NumberNode();
+    number->numberToken = Token(TokenType::Number, 6, 6);
+
+    auto multipInversion = new MultiplicationInversionNode();
+    multipInversion->leftRoundBracketToken = Token(TokenType::LeftRoundBracket, 5, 5);
+    multipInversion->rightRoundBracketToken = Token(TokenType::RightRoundBracket, 7, 7);
+    multipInversion->multiplicationInversionToken = Token(TokenType::MultiplicationInversion, 4, 4);
+    multipInversion->innerExpr = number;
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 8, 8);
+    assignment0->rightSideExpr = multipInversion;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete actualAst;
+}
+
+void Parse_MultiplyAndMultiplicationInversion()
+{
+    char* text = "a = b * /(2);";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto rightSideVariable = new RightSideVariableNode();
+    rightSideVariable->variableNameToken = Token(TokenType::VariableName, 4, 4);
+
+    auto number = new NumberNode();
+    number->numberToken = Token(TokenType::Number, 10, 10);
+
+    auto multipInversion = new MultiplicationInversionNode();
+    multipInversion->leftRoundBracketToken = Token(TokenType::LeftRoundBracket, 9, 9);
+    multipInversion->rightRoundBracketToken = Token(TokenType::RightRoundBracket, 11, 11);
+    multipInversion->multiplicationInversionToken = Token(TokenType::MultiplicationInversion, 8, 8);
+    multipInversion->innerExpr = number;
+
+    auto assocOperation = new AssocOperationNode();
+    assocOperation->operands.push_back(rightSideVariable);
+    assocOperation->operands.push_back(multipInversion);
+    assocOperation->operatorTokens.push_back(Token(TokenType::Multiply, 6, 6));
+
+    auto assignment0 = new AssignmentNode();
+    assignment0->variableNameToken = Token(TokenType::VariableName, 0, 0);
+    assignment0->assignmentToken = Token(TokenType::Assignment, 2, 2);
+    assignment0->semicolonToken = Token(TokenType::Semicolon, 12, 12);
+    assignment0->rightSideExpr = assocOperation;
+
+    auto expectedAst = new ProgramNode();
+    expectedAst->statements.push_back(assignment0);
+
+    AssertTrees(expectedAst, actualAst);
+
+    delete actualAst;
+}
+
 int main()
 {
     Parse_Program();
@@ -918,5 +1030,8 @@ int main()
     Parse_True();
     Parse_False();
     Parse_Negate();
-    Parse_AssignmentOfEquality();
+    Parse_Equality();
+    Parse_Multiply();
+    Parse_MultiplicationInversion();
+    Parse_MultiplyAndMultiplicationInversion();
 }

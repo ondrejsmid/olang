@@ -48,6 +48,8 @@ LexerGen::LexerGen()
     allTokenDfas.push_back(CreateKeywordDfa(";", TokenType::Semicolon));
     allTokenDfas.push_back(CreateKeywordDfa("=", TokenType::Assignment));
     allTokenDfas.push_back(CreateKeywordDfa("+", TokenType::Plus));
+    allTokenDfas.push_back(CreateKeywordDfa("*", TokenType::Multiply));
+    allTokenDfas.push_back(CreateKeywordDfa("/", TokenType::MultiplicationInversion));
     allTokenDfas.push_back(CreateKeywordDfa("-", TokenType::UnaryMinus));
     allTokenDfas.push_back(CreateKeywordDfa("if", TokenType::If));
     allTokenDfas.push_back(CreateKeywordDfa("else", TokenType::Else));

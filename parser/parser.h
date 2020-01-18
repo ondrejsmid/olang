@@ -63,6 +63,11 @@ struct UnaryMinusNode : EnclosedExpr
     Token unaryMinusToken;
 };
 
+struct MultiplicationInversionNode : EnclosedExpr
+{
+    Token multiplicationInversionToken;
+};
+
 struct NegateNode : EnclosedExpr
 {
     Token negateToken;
