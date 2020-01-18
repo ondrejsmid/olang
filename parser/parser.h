@@ -106,6 +106,17 @@ struct IfNode : AstNode
     ~IfNode();
 };
 
+struct WhileNode : AstNode
+{
+    Token whileToken;
+    Token leftRoundBracketToken;
+    Token rightRoundBracketToken;
+    Token leftCurlyBracketToken;
+    Token rightCurlyBracketToken;
+    ExprNode* condition;
+    ProgramNode* program;
+};
+
 class Parser
 {
 public:
@@ -119,6 +130,7 @@ private:
     AssignmentNode* ParseAssignment(const Token& variableNameToken);
     ExprNode* ParseExpr(Token* terminationToken);
     IfNode* ParseIf(const Token& ifToken);
+    WhileNode* ParseWhile(const Token& whileToken);
 };
 
 #endif

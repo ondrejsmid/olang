@@ -35,6 +35,7 @@ enum TokenType
     UnaryMinus,
     If,
     Else,
+    While,
     LeftRoundBracket,
     RightRoundBracket,
     LeftCurlyBracket,

@@ -168,6 +168,21 @@ void AssertTrees(AstNode* expected, AstNode* actual)
     assert(expectedCasted->rightCurlyBracketToken == actualCasted->rightCurlyBracketToken);
     AssertTrees(expectedCasted->program, actualCasted->program);
     }
+    else if (dynamic_cast<WhileNode*>(expected) != NULL)
+    {
+        assert(dynamic_cast<WhileNode*>(actual) != NULL);
+
+        WhileNode* expectedCasted = (WhileNode*)(expected);
+        WhileNode* actualCasted = (WhileNode*)(actual);
+
+        assert(expectedCasted->whileToken == actualCasted->whileToken);
+        assert(expectedCasted->leftRoundBracketToken == actualCasted->leftRoundBracketToken);
+        assert(expectedCasted->rightRoundBracketToken == actualCasted->rightRoundBracketToken);
+        assert(expectedCasted->leftCurlyBracketToken == actualCasted->leftCurlyBracketToken);
+        assert(expectedCasted->rightCurlyBracketToken == actualCasted->rightCurlyBracketToken);
+        AssertTrees(expectedCasted->condition, actualCasted->condition);
+        AssertTrees(expectedCasted->program, actualCasted->program);
+    }
     else {
         assert(!"Not yet supported AST node types found.");
     }
@@ -1009,6 +1024,65 @@ void Parse_MultiplyAndMultiplicationInversion()
     delete actualAst;
 }
 
+void Parse_While()
+{
+    char* text =
+        "while (x < 3) {"
+        "  a = a + 1;"
+        "}";
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+
+    auto rightSideVariable0 = new RightSideVariableNode();
+    rightSideVariable0->variableNameToken = Token(TokenType::VariableName, 21, 21);
+
+    auto number0 = new NumberNode();
+    number0->numberToken = Token(TokenType::Number, 25, 25);
+
+    auto addition = new AssocOperationNode();
+    addition->operands.push_back(rightSideVariable0);
+    addition->operands.push_back(number0);
+    addition->operatorTokens.push_back(Token(TokenType::Plus, 23, 23));
+
+    auto assignment = new AssignmentNode();
+    assignment->variableNameToken = Token(TokenType::VariableName, 17, 17);
+    assignment->assignmentToken = Token(TokenType::Assignment, 19, 19);
+    assignment->semicolonToken = Token(TokenType::Semicolon, 26, 26);
+    assignment->rightSideExpr = addition;
+
+    auto programInWhile = new ProgramNode();
+    programInWhile->statements.push_back(assignment);
+
+    auto rightSideVariable1 = new RightSideVariableNode();
+    rightSideVariable1->variableNameToken = Token(TokenType::VariableName, 7, 7);
+
+    auto number1 = new NumberNode();
+    number1->numberToken = Token(TokenType::Number, 11, 11);
+
+    auto comparison = new AssocOperationNode();
+    comparison->operands.push_back(rightSideVariable1);
+    comparison->operands.push_back(number1);
+    comparison->operatorTokens.push_back(Token(TokenType::Less, 9, 9));
+
+    auto whileNode = new WhileNode();
+    whileNode->whileToken = Token(TokenType::While, 0, 4);
+    whileNode->leftRoundBracketToken = Token(TokenType::LeftRoundBracket, 6, 6);
+    whileNode->rightRoundBracketToken = Token(TokenType::RightRoundBracket, 12, 12);
+    whileNode->leftCurlyBracketToken = Token(TokenType::LeftCurlyBracket, 14, 14);
+    whileNode->rightCurlyBracketToken = Token(TokenType::RightCurlyBracket, 27, 27);
+    whileNode->condition = comparison;
+    whileNode->program = programInWhile;
+
+    auto program = new ProgramNode();
+    program->statements.push_back(whileNode);
+
+    AssertTrees(program, actualAst);
+
+    delete program;
+    delete actualAst;
+}
+
 int main()
 {
     Parse_Program();
@@ -1034,4 +1108,5 @@ int main()
     Parse_Multiply();
     Parse_MultiplicationInversion();
     Parse_MultiplyAndMultiplicationInversion();
+    Parse_While();
 }

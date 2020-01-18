@@ -53,6 +53,7 @@ LexerGen::LexerGen()
     allTokenDfas.push_back(CreateKeywordDfa("-", TokenType::UnaryMinus));
     allTokenDfas.push_back(CreateKeywordDfa("if", TokenType::If));
     allTokenDfas.push_back(CreateKeywordDfa("else", TokenType::Else));
+    allTokenDfas.push_back(CreateKeywordDfa("while", TokenType::While));
     allTokenDfas.push_back(CreateKeywordDfa("(", TokenType::LeftRoundBracket));
     allTokenDfas.push_back(CreateKeywordDfa(")", TokenType::RightRoundBracket));
     allTokenDfas.push_back(CreateKeywordDfa("{", TokenType::LeftCurlyBracket));

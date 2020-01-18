@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "parser.h"
 #include <stdexcept>
 #include "parser.h"
 
@@ -97,7 +98,14 @@ ProgramNode *Parser::ParseProgram(Token* terminationToken)
                 program->statements.push_back(ifNode);
                 break;
             }
-                
+            
+            case TokenType::While:
+            {
+                auto whileNode = ParseWhile(token);
+                program->statements.push_back(whileNode);
+                break;
+            }
+
             case TokenType::RightCurlyBracket:
                 *terminationToken = token;
                 return program;
@@ -283,4 +291,15 @@ IfNode* Parser::ParseIf(const Token& ifToken)
     }
 
     return ifNode;
+}
+
+WhileNode* Parser::ParseWhile(const Token& whileToken)
+{
+    auto whileNode = new WhileNode();
+    whileNode->whileToken = whileToken;
+    whileNode->leftRoundBracketToken = GetTokenThrowExceptionIfWrongType(TokenType::LeftRoundBracket);
+    whileNode->condition = ParseExpr(&(whileNode->rightRoundBracketToken));
+    whileNode->leftCurlyBracketToken = GetTokenThrowExceptionIfWrongType(TokenType::LeftCurlyBracket);
+    whileNode->program = ParseProgram(&(whileNode->rightCurlyBracketToken));
+    return whileNode;
 }

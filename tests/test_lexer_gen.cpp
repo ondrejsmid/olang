@@ -537,6 +537,19 @@ void MultiplicationInversionAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::MultiplicationInversion);
 }
 
+void WhileAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('w');
+    unionDfa.Move('h');
+    unionDfa.Move('i');
+    unionDfa.Move('l');
+    unionDfa.Move('e');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::While);
+}
+
 int main()
 {
     Whitespace_SingleSpaceAccepted();
@@ -586,4 +599,5 @@ int main()
     OrAccepted();
     MultiplyAccepted();
     MultiplicationInversionAccepted();
+    WhileAccepted();
 }
