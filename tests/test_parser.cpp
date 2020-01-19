@@ -1,4 +1,5 @@
 #include <cassert>
+#include "utils.h"
 #include "../parser/parser.h"
 
 using namespace std;
@@ -1118,18 +1119,44 @@ void ParseError_InvalidToken()
         "var x"
         "var ?"
         "var y";
+    
     Parser parser(text, strlen(text));
-    try {
+
+    AssertExceptions<runtime_error>([&]() {
+            parser.Parse();
+        },
+        runtime_error("Parse error on a position 9: An invalid token: ?"));
+}
+
+void ParseError_Declaration_NoVariableName()
+{
+    char* text =
+        "var 1;";
+
+    Parser parser(text, strlen(text));
+
+    AssertExceptions<runtime_error>([&]() {
         parser.Parse();
-    }
-    catch (runtime_error ex)
-    {
-        assert(ex.what() == string("Parse error on a position 9: An invalid token: ?"));
-    }
+        },
+        runtime_error("Parse error on a position 4: Expected token is a variable name."));
+}
+
+void ParseError_Declaration_NoSemicolon()
+{
+    char* text =
+        "var x if";
+
+    Parser parser(text, strlen(text));
+
+    AssertExceptions<runtime_error>([&]() {
+        parser.Parse();
+        },
+        runtime_error("Parse error on a position 6: Expected token is a semicolon."));
 }
 
 int main()
 {
+#if true
     Parse_Program();
     Parse_AssignmentOfRightSideVariable();
     Parse_AssignmentOfAssocOperation_Addition_TC1();
@@ -1155,5 +1182,8 @@ int main()
     Parse_MultiplyAndMultiplicationInversion();
     Parse_While();
     Parse_Declaration();
+#endif
     ParseError_InvalidToken();
+    ParseError_Declaration_NoVariableName();
+    ParseError_Declaration_NoSemicolon();
 }

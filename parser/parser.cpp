@@ -84,18 +84,21 @@ Token Parser::GetTokenThrowExceptionIfWrongType(TokenType expectedTokenType)
         case TokenType::VariableName:
             expectedTokenTypeName = "a variable name";
             break;
+        case TokenType::Semicolon:
+            expectedTokenTypeName = "a semicolon";
+            break;
         default:
             constexpr auto assertMessage = "Unexpected behaviour. Please report this bug.\nFile:" __FILE__ "\nLine:" TOSTRING(__LINE__) "\n";
             assert(!assertMessage);
         }
-        ParseError("Expected token is ");
+        ParseError("Expected token is " + expectedTokenTypeName + ".");
     }
     return token;
 }
 
 void Parser::ParseError(string msg)
 {
-    throw runtime_error("Parse error on a position " + to_string(lexer.CurrentIdx()) + ": " + msg);
+    throw runtime_error("Parse error on a position " + to_string(lexer.CurrentStartIdx()) + ": " + msg);
 }
 
 ProgramNode *Parser::ParseProgram(Token* terminationToken)

@@ -37,7 +37,7 @@ public:
 	Token GetNextToken();
 	Token GetNextNonWhitespaceToken();
     void MoveBack();
-    size_t CurrentIdx();
+    size_t CurrentStartIdx();
     std::string GetTokenText(const Token& token);
 };
 

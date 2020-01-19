@@ -73,9 +73,9 @@ void Lexer::MoveBack()
     idx = prevIdx;
 }
 
-size_t Lexer::CurrentIdx()
+size_t Lexer::CurrentStartIdx()
 {
-    return idx;
+    return prevIdx;
 }
 
 std::string Lexer::GetTokenText(const Token& token)
