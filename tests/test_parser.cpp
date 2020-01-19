@@ -192,6 +192,7 @@ void AssertTrees(AstNode* expected, AstNode* actual)
 
     assert(expectedCasted->varKwToken == actualCasted->varKwToken);
     assert(expectedCasted->variableNameToken == actualCasted->variableNameToken);
+    assert(expectedCasted->semicolonToken == actualCasted->semicolonToken);
     }
     else {
         assert(!"Not yet supported AST node types found.");
@@ -1102,6 +1103,7 @@ void Parse_Declaration()
     auto declarationNode = new DeclarationNode();
     declarationNode->varKwToken = Token(TokenType::Var, 7, 9);
     declarationNode->variableNameToken = Token(TokenType::VariableName, 11, 13);
+    declarationNode->semicolonToken = Token(TokenType::Semicolon, 14, 14);
 
     Parser parser(text, strlen(text));
     auto actualAst = parser.Parse();
