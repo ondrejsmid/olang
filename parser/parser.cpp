@@ -1,5 +1,3 @@
-#include "parser.h"
-#include "parser.h"
 #include <stdexcept>
 #include "parser.h"
 
@@ -70,14 +68,34 @@ AstNode* Parser::Parse()
     return ParseProgram(&dummyToken);
 }
 
-Token Parser::GetTokenThrowExceptionIfWrongType(TokenType tokenType)
+Token Parser::GetTokenThrowExceptionIfWrongType(TokenType expectedTokenType)
 {
     auto token = lexer.GetNextNonWhitespaceToken();
-    if (token.tokenType != tokenType)
+    if (token.tokenType == TokenType::Invalid)
     {
-        throw runtime_error("parse error");
+        ParseError("An invalid token: " + lexer.GetTokenText(token));
+    }
+    if (token.tokenType != expectedTokenType)
+    {
+        string expectedTokenTypeName;
+        switch (expectedTokenType) {
+        case TokenType::Eof:
+            ParseError("End of file expected.");
+        case TokenType::VariableName:
+            expectedTokenTypeName = "a variable name";
+            break;
+        default:
+            constexpr auto assertMessage = "Unexpected behaviour. Please report this bug.\nFile:" __FILE__ "\nLine:" TOSTRING(__LINE__) "\n";
+            assert(!assertMessage);
+        }
+        ParseError("Expected token is ");
     }
     return token;
+}
+
+void Parser::ParseError(string msg)
+{
+    throw runtime_error("Parse error on a position " + to_string(lexer.CurrentIdx()) + ": " + msg);
 }
 
 ProgramNode *Parser::ParseProgram(Token* terminationToken)

@@ -1,3 +1,4 @@
+#include <cstring>
 #include "../lexer_gen/lexer_gen.h"
 #include "../dfa/dfa.h"
 
@@ -36,6 +37,8 @@ public:
 	Token GetNextToken();
 	Token GetNextNonWhitespaceToken();
     void MoveBack();
+    size_t CurrentIdx();
+    std::string GetTokenText(const Token& token);
 };
 
 #endif

@@ -1,6 +1,10 @@
 #include "lexer.h"
+#include "lexer.h"
+#include "lexer.h"
 #include <cassert>
 #include "lexer.h"
+
+using namespace std;
 
 Lexer::Lexer(char * text, size_t textLen)
     :
@@ -67,4 +71,14 @@ Token Lexer::GetNextNonWhitespaceToken()
 void Lexer::MoveBack()
 {
     idx = prevIdx;
+}
+
+size_t Lexer::CurrentIdx()
+{
+    return idx;
+}
+
+std::string Lexer::GetTokenText(const Token& token)
+{
+    return string(text + token.startIdx, text + token.endIdx + 1);
 }

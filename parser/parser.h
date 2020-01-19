@@ -1,7 +1,12 @@
+#include <cstring>
+#include <cassert>
 #include "../lexer/lexer.h"
 
 #ifndef PARSER_H
 #define PARSER_H
+
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
 
 struct AstNode
 {
@@ -132,7 +137,8 @@ public:
 
 private:
     Lexer lexer;
-    Token GetTokenThrowExceptionIfWrongType(TokenType tokenType);
+    Token GetTokenThrowExceptionIfWrongType(TokenType expectedTokenType);
+    void ParseError(std::string msg);
     ProgramNode* ParseProgram(Token* terminationToken);
     AssignmentNode* ParseAssignment(const Token& variableNameToken);
     ExprNode* ParseExpr(Token* terminationToken);

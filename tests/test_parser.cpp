@@ -1,6 +1,8 @@
 #include <cassert>
 #include "../parser/parser.h"
 
+using namespace std;
+
 void AssertTrees(AstNode* expected, AstNode* actual)
 {
     assert(expected != NULL);
@@ -1110,6 +1112,22 @@ void Parse_Declaration()
     AssertTrees(declarationNode, (((ProgramNode*)actualAst)->statements[1]));
 }
 
+void ParseError_InvalidToken()
+{
+    char* text =
+        "var x"
+        "var ?"
+        "var y";
+    Parser parser(text, strlen(text));
+    try {
+        parser.Parse();
+    }
+    catch (runtime_error ex)
+    {
+        assert(ex.what() == string("Parse error on a position 9: An invalid token: ?"));
+    }
+}
+
 int main()
 {
     Parse_Program();
@@ -1137,4 +1155,5 @@ int main()
     Parse_MultiplyAndMultiplicationInversion();
     Parse_While();
     Parse_Declaration();
+    ParseError_InvalidToken();
 }
