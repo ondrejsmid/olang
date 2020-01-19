@@ -23,6 +23,7 @@ enum TokenType
     Eof,
     Whitespace,
     VariableName,
+    Var,
     Number,
     String,
     True,

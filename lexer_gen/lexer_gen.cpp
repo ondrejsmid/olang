@@ -45,6 +45,7 @@ LexerGen::LexerGen()
     stringDfa.AddTransition(2, 1, 0, 255);
     allTokenDfas.push_back(stringDfa);
 
+    allTokenDfas.push_back(CreateKeywordDfa("var", TokenType::Var));
     allTokenDfas.push_back(CreateKeywordDfa(";", TokenType::Semicolon));
     allTokenDfas.push_back(CreateKeywordDfa("=", TokenType::Assignment));
     allTokenDfas.push_back(CreateKeywordDfa("+", TokenType::Plus));

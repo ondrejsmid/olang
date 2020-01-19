@@ -117,6 +117,13 @@ struct WhileNode : AstNode
     ProgramNode* program;
 };
 
+struct DeclarationNode : AstNode
+{
+    Token varKwToken;
+    Token variableNameToken;
+    Token semicolonToken;
+};
+
 class Parser
 {
 public:

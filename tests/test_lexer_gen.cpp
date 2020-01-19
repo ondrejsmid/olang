@@ -550,6 +550,17 @@ void WhileAccepted()
     assert(unionDfa.CurrentFinalStateTokenType() == TokenType::While);
 }
 
+void VarAccepted()
+{
+    LexerGen lexer_gen;
+    Dfa unionDfa = lexer_gen.unionDfa;
+    unionDfa.Move('v');
+    unionDfa.Move('a');
+    unionDfa.Move('r');
+    assert(unionDfa.IsInFinalState());
+    assert(unionDfa.CurrentFinalStateTokenType() == TokenType::Var);
+}
+
 int main()
 {
     Whitespace_SingleSpaceAccepted();
@@ -600,4 +611,5 @@ int main()
     MultiplyAccepted();
     MultiplicationInversionAccepted();
     WhileAccepted();
+    VarAccepted();
 }

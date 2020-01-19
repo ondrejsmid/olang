@@ -106,6 +106,16 @@ ProgramNode *Parser::ParseProgram(Token* terminationToken)
                 break;
             }
 
+            case TokenType::Var:
+            {
+                auto declaration = new DeclarationNode();
+                declaration->varKwToken = token;
+                declaration->variableNameToken = GetTokenThrowExceptionIfWrongType(TokenType::VariableName);
+                declaration->semicolonToken = GetTokenThrowExceptionIfWrongType(TokenType::Semicolon);
+                program->statements.push_back(declaration);
+                break;
+            }
+
             case TokenType::RightCurlyBracket:
                 *terminationToken = token;
                 return program;

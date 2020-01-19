@@ -183,6 +183,16 @@ void AssertTrees(AstNode* expected, AstNode* actual)
         AssertTrees(expectedCasted->condition, actualCasted->condition);
         AssertTrees(expectedCasted->program, actualCasted->program);
     }
+    else if (dynamic_cast<DeclarationNode*>(expected) != NULL)
+    {
+    assert(dynamic_cast<DeclarationNode*>(actual) != NULL);
+
+    DeclarationNode* expectedCasted = (DeclarationNode*)(expected);
+    DeclarationNode* actualCasted = (DeclarationNode*)(actual);
+
+    assert(expectedCasted->varKwToken == actualCasted->varKwToken);
+    assert(expectedCasted->variableNameToken == actualCasted->variableNameToken);
+    }
     else {
         assert(!"Not yet supported AST node types found.");
     }
@@ -1083,6 +1093,21 @@ void Parse_While()
     delete actualAst;
 }
 
+void Parse_Declaration()
+{
+    char* text =
+        "var a1;"
+        "var x12;";
+
+    auto declarationNode = new DeclarationNode();
+    declarationNode->varKwToken = Token(TokenType::Var, 7, 9);
+    declarationNode->variableNameToken = Token(TokenType::VariableName, 11, 13);
+
+    Parser parser(text, strlen(text));
+    auto actualAst = parser.Parse();
+    AssertTrees(declarationNode, (((ProgramNode*)actualAst)->statements[1]));
+}
+
 int main()
 {
     Parse_Program();
@@ -1109,4 +1134,5 @@ int main()
     Parse_MultiplicationInversion();
     Parse_MultiplyAndMultiplicationInversion();
     Parse_While();
+    Parse_Declaration();
 }
